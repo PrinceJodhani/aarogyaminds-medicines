@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google"
 import "./globals.css";
 
+import SidePanel from "@/components/SidePanel";
+import TopBar from "@/components/TopBar";
+
 import { cn } from "@/lib/utils"
  
 const fontSans = FontSans({
@@ -24,7 +27,14 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}>
-          {children}</body>
+           <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <SidePanel />
+      <div className="flex flex-col">
+        <TopBar />
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+          {children} 
+          </main></div></div>
+          </body>
     </html>
   );
 }
