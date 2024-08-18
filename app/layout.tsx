@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google"
 import "./globals.css";
-
+import { ThemeProvider } from "@/components/theme-provider"
 import SidePanel from "@/components/SidePanel";
 import TopBar from "@/components/TopBar";
 
@@ -27,6 +27,14 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased",
           fontSans.variable
         )}>
+
+<ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+
            <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <SidePanel />
       <div className="flex flex-col">
@@ -34,6 +42,7 @@ export default function RootLayout({
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
           {children} 
           </main></div></div>
+          </ThemeProvider>
           </body>
     </html>
   );
