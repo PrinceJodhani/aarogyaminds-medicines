@@ -21,6 +21,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
+import { ModeToggle } from "@/components/darkmode"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +43,7 @@ export default function Dashboard() {
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6" />
-              <span className="">Acme Inc</span>
+              <span className="">Aarogya Minds</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
               <Bell className="h-4 w-4" />
@@ -51,7 +54,7 @@ export default function Dashboard() {
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               <Link
                 href="#"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 bg-muted transition-all hover:text-primary"
               >
                 <Home className="h-4 w-4" />
                 Dashboard
@@ -73,6 +76,7 @@ export default function Dashboard() {
                 <Package className="h-4 w-4" />
                 Products{" "}
               </Link>
+
               <Link
                 href="#"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
@@ -90,7 +94,7 @@ export default function Dashboard() {
             </nav>
           </div>
           <div className="mt-auto p-4">
-            <Card x-chunk="dashboard-02-chunk-0">
+            {/* <Card x-chunk="dashboard-02-chunk-0">
               <CardHeader className="p-2 pt-0 md:p-4">
                 <CardTitle>Upgrade to Pro</CardTitle>
                 <CardDescription>
@@ -103,7 +107,7 @@ export default function Dashboard() {
                   Upgrade
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>
@@ -168,22 +172,7 @@ export default function Dashboard() {
                   Analytics
                 </Link>
               </nav>
-              <div className="mt-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Upgrade to Pro</CardTitle>
-                    <CardDescription>
-                      Unlock all features and get unlimited access to our
-                      support team.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button size="sm" className="w-full">
-                      Upgrade
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
+              
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
@@ -197,7 +186,9 @@ export default function Dashboard() {
                 />
               </div>
             </form>
+         
           </div>
+          <ModeToggle/>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
