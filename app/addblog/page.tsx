@@ -24,8 +24,8 @@ import { Textarea } from "@/components/ui/textarea"
 import QuillEditor from "@/components/QuillEditor";
 
 
-export default function addblog(){
-    const [content, setContent] = useState('');
+export default function AddBlog(){
+    const [content, setContent] = useState<string>('');
 
   const handleContentChange = (value: string) => {
     setContent(value);
@@ -92,8 +92,8 @@ export default function addblog(){
 
             {/* Buttons */}
             <CardFooter className="flex justify-between">
-                <Button variant="outline">Cancel</Button>
-                <Button>Fire</Button>
+                <Button variant="outline">Clear</Button>
+                <Button>Publish</Button>
             </CardFooter>
             </Card>
         </div>
