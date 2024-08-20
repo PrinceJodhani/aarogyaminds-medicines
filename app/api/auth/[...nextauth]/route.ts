@@ -1,42 +1,28 @@
-// app/api/auth/[...nextauth]/route.ts
-
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 
 export const authOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
-    CredentialsProvider({
-      name: 'Credentials',
-      credentials: {
-        username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" }
-      },
-      authorize: async (credentials) => {
-        // Replace this with your own authentication logic
-        if (credentials?.username === 'user' && credentials?.password === 'password') {
-          return { id: '1', name: 'User', email: 'user@example.com' };
-        }
-        return null;
-      }
-    })
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_CLIENT_ID as string,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
+    }),
   ],
-  pages: {
-    signIn: '/login',
-  },
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: true,
   callbacks: {
-    async redirect({ url }) {
-      return '/login';
+    async signIn({ user, account, profile }:any) {
+      console.log("Sign In Callback:", { user, account, profile });
+      return true;
     },
-    async session({ session, user }) {
-      session.user = user;
-      return session;
-    }
-  }
+  },
 };
 
-export default NextAuth(authOptions);
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };

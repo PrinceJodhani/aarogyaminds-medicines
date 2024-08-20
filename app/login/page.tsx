@@ -1,25 +1,20 @@
-// app/login/page.tsx
+// app/signin/page.tsx
+'use client';
 
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../api/auth/[...nextauth]/route';
-import LoginForm from '@/components/LoginForm';
+import { signIn } from 'next-auth/react';
 
-const LoginPage = async () => {
-  const session = await getServerSession(authOptions);
-
-  if (session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <pre>{JSON.stringify(session, null, 2)}</pre>
-      </div>
-    );
-  }
-
+const SignInPage = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <LoginForm />
+    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+      <h1>Sign In</h1>
+      <button onClick={() => signIn('google')} style={{ margin: '10px' }}>
+        Sign in with Google
+      </button>
+      <button onClick={() => signIn('facebook')} style={{ margin: '10px' }}>
+        Sign in with Facebook
+      </button>
     </div>
   );
 };
 
-export default LoginPage;
+export default SignInPage;
