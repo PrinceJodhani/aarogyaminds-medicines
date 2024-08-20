@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
+import { query } from "@/lib/db";
 
 export const authOptions = {
   providers: [
@@ -8,19 +8,33 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID as string,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET as string,
-    }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: true,
   callbacks: {
     async signIn({ user, account, profile }:any) {
-      console.log("Sign In Callback:", { user, account, profile });
-      return true;
+      try {
+        // Check if user already exists
+        const existingUser = await query(
+          'SELECT id FROM users WHERE google_id = $1',
+          [profile.sub]
+        );
+
+        if (existingUser.rows.length === 0) {
+          // If not, insert a new user
+          await query(
+            `INSERT INTO users (google_id, name, email, profile_picture) 
+             VALUES ($1, $2, $3, $4)`,
+            [profile.sub, user.name, user.email, user.image]
+          );
+        }
+
+        return true;
+      } catch (error) {
+        console.error("Error saving user data:", error);
+        return false;
+      }
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
