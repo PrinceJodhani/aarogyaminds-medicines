@@ -6,6 +6,7 @@ import SidePanel from "@/components/SidePanel";
 import TopBar from "@/components/TopBar";
 import { cn } from "@/lib/utils";
 import ClientProvider from "@/components/ClientProvider"; // Import ClientProvider
+import { Toaster } from "@/components/ui/toaster"
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -42,6 +43,7 @@ export default function RootLayout({
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
                   {children}
                 </main>
+                <Toaster />
               </div>
             </div>
           </ClientProvider>
