@@ -1,3 +1,4 @@
+"use client"
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,7 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";  // Import signOut from next-auth/react
 import { ModeToggle } from "./darkmode";
 
 const TopBar: React.FC = () => {
@@ -55,9 +57,12 @@ const TopBar: React.FC = () => {
             <Link href="/editprofile">Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-          <Link href="mailto:support@aarogyaminds.com">Support</Link></DropdownMenuItem>
+            <Link href="mailto:support@aarogyaminds.com">Support</Link>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => signOut()}> {/* Use signOut on click */}
+            Logout
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
