@@ -20,6 +20,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch";
+
 
 interface FormValues {
   prefix: string;
@@ -55,8 +66,16 @@ interface FormValues {
   };
 
   return (
+    <Card className="w-[350px]">
+      <CardHeader>
+        <CardTitle>Create project</CardTitle>
+        <CardDescription>Deploy your new project in one-click.</CardDescription>
+      </CardHeader>
+      <CardContent>
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="flex space-x-4">
+     
+
         <FormField
           control={control}
           name="prefix"
@@ -117,6 +136,9 @@ interface FormValues {
           </FormItem>
         )}
       />
+
+
+
       <FormField
         control={control}
         name="bio"
@@ -168,6 +190,22 @@ interface FormValues {
           </FormItem>
         )}
       />
+
+
+
+<div className=" flex items-center space-x-4 rounded-md border p-4">
+          {/* <BellRing /> */}
+          <div className="flex-1 space-y-1">
+            <p className="text-sm font-medium leading-none">
+              Are you a Psychiatrist?
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Sign Up as a Psychiatrist?
+            </p>
+          </div>
+          <Switch />
+        </div>
+
       <FormField
         control={control}
         name="degreeName"
@@ -212,6 +250,11 @@ interface FormValues {
       />
       <Button type="submit">Update</Button>
     </form>
+    </CardContent>
+    <CardFooter className="flex justify-between">
+      
+      </CardFooter>
+    </Card>
   );
 }
 

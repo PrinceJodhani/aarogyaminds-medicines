@@ -10,11 +10,11 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }:any) {
+    async signIn({ user, account, profile }: any) {
       try {
         // Check if user already exists
         const existingUser = await query(
-          'SELECT id FROM users WHERE google_id = $1',
+          "SELECT id FROM users WHERE google_id = $1",
           [profile.sub]
         );
 
@@ -32,6 +32,11 @@ export const authOptions = {
         console.error("Error saving user data:", error);
         return false;
       }
+    },
+
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+      // Redirect to /editprofile after successful sign-in
+      return `${baseUrl}/editprofile`;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

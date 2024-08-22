@@ -1,10 +1,11 @@
-import { Profile } from "@/components/Profile";
-const EditProfile = () => {
-    return(
-        <div>
-            <Profile/>
-        </div>
-    )
 
-}
-export default EditProfile;
+import { Profile } from '@/components/Profile';
+import React from 'react';
+export default function EditProfile() {
+    return (
+      <div>
+        <Profile/>
+      </div>
+    );
+  }
+  

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import QuillEditor from "@/components/QuillEditor";
 import TagsInput from "@/components/TagsInput";
-import { addNewBlog } from "@/app/addblog/page";
+import { addNewBlog } from "@/app/(dashboad)/addblog/page";
 import { useToast } from "@/components/ui/use-toast";
 
 interface BlogFormProps {
