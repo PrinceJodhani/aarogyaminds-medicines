@@ -39,12 +39,12 @@ export const authOptions: AuthOptions = {
     },
 
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      // try {
-      //   // Logic for determining redirect URL
-      //   const existingUser = await query(
-      //     "SELECT id FROM users WHERE id = $1",
-      //     [url]
-      //   );
+      try {
+        // Logic for determining redirect URL
+        const existingUser = await query(
+          "SELECT id FROM users WHERE id = $1",
+          [url]
+        );
 
       //   return existingUser.rows.length > 0 ? `${baseUrl}/addblog` : `${baseUrl}/editprofile`;
       // } catch (error) {
