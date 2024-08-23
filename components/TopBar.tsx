@@ -57,7 +57,7 @@ const TopBar: React.FC = () => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Link href="/editprofile">Profile</Link>
+            <Link href="/yourprofile">Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Link href="mailto:support@aarogyaminds.com">Support</Link>
