@@ -26,6 +26,7 @@ import {
 import Link from "next/link";
 import { signOut } from "next-auth/react";  // Import signOut from next-auth/react
 import { ModeToggle } from "./darkmode";
+import MyAccount from "./MyAccount";
 
 const TopBar: React.FC = () => {
   return (
@@ -51,7 +52,9 @@ const TopBar: React.FC = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>
+          <MyAccount/>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
             <Link href="/editprofile">Profile</Link>
