@@ -63,19 +63,19 @@ function ProfileForm() {
   };
 
   return (
-    <Card className="w-[350px]">
+    <Card className="w-full max-w-lg mx-auto">
       <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
-        <CardDescription>Update your profile details</CardDescription>
+        <CardTitle className="text-center text-2xl">Profile Information</CardTitle>
+        <CardDescription className="text-center text-muted-foreground">Update your profile details</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div className="flex space-x-4">
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={control}
               name="prefix"
               render={({ field }) => (
-                <FormItem className="w-1/3">
+                <FormItem>
                   <FormLabel>Prefix</FormLabel>
                   <FormControl>
                     <Select {...field}>
@@ -105,7 +105,7 @@ function ProfileForm() {
               control={control}
               name="firstname"
               render={({ field }) => (
-                <FormItem className="w-2/3">
+                <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
                     <Input placeholder="First Name" {...field} />
@@ -144,13 +144,52 @@ function ProfileForm() {
             )}
           />
 
-          <div className="flex items-center space-x-4 rounded-md border p-4">
+          <FormField
+            control={control}
+            name="insta"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Instagram URL" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="facebook"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Facebook URL" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="twitter"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Twitter URL" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex items-center justify-between space-x-4 rounded-md border p-4 bg-muted">
             <div className="flex-1 space-y-1">
               <p className="text-sm font-medium leading-none">
                 Are you a Psychiatrist?
               </p>
               <p className="text-sm text-muted-foreground">
-                Sign Up as a Psychiatrist?
+                Sign Up as a Psychiatrist
               </p>
             </div>
             <Switch checked={isPsychiatrist} onCheckedChange={setIsPsychiatrist} />
@@ -226,7 +265,9 @@ function ProfileForm() {
             </>
           )}
 
-          <Button type="submit">Update</Button>
+          <CardFooter className="flex justify-between pt-4">
+            <Button type="submit">Update</Button>
+          </CardFooter>
         </form>
       </CardContent>
     </Card>

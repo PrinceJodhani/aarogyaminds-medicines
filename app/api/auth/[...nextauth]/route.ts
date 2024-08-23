@@ -41,7 +41,7 @@ export const authOptions: AuthOptions = {
         // Logic for determining redirect URL
         const existingUser = await query(
           "SELECT id FROM users WHERE id = $1",
-          [url]
+          [2] //Make changes here,
         );
 
         return existingUser.rows.length > 0 ? `${baseUrl}/addblog` : `${baseUrl}/editprofile`;
