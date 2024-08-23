@@ -1,7 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { query } from "@/lib/db";
-
+var flag = false
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
@@ -15,17 +15,19 @@ export const authOptions: AuthOptions = {
         const existingUser = await query(
           "SELECT id FROM users WHERE google_id = $1",
           [profile.sub]
-          
         );
+          console.log("-------------"+profile.sub)
        
         if (existingUser.rows.length > 0) {
           user.id = existingUser.rows[0].id;
+          flag = true
         } else {
           const newUser = await query(
             `INSERT INTO users (google_id, name, email, profile_picture) 
              VALUES ($1, $2, $3, $4) RETURNING id`,
             [profile.sub, user.name, user.email, user.image]
           );
+          flag = false
           user.id = newUser.rows[0].id;
         }
 
@@ -37,18 +39,30 @@ export const authOptions: AuthOptions = {
     },
 
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      try {
-        // Logic for determining redirect URL
-        const existingUser = await query(
-          "SELECT id FROM users WHERE id = $1",
-          [url]
-        );
+      // try {
+      //   // Logic for determining redirect URL
+      //   const existingUser = await query(
+      //     "SELECT id FROM users WHERE id = $1",
+      //     [url]
+      //   );
 
-        return existingUser.rows.length > 0 ? `${baseUrl}/addblog` : `${baseUrl}/editprofile`;
-      } catch (error) {
-        console.error("Error during redirection:", error);
-        return baseUrl;
+      //   return existingUser.rows.length > 0 ? `${baseUrl}/addblog` : `${baseUrl}/editprofile`;
+      // } catch (error) {
+      //   console.error("Error during redirection:", error);
+      //   return baseUrl;
+      // }
+      var uri = ''
+      if (flag){
+        uri = `${baseUrl}/addblog`
+
       }
+      else{
+        uri = `${baseUrl}/editprofile`
+
+      }
+      console.log("next redirected uri = " + uri)
+      flag = false
+      return uri
     },
 
     async session({ session, token }: any) {
