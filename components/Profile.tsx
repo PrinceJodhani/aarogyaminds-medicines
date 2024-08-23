@@ -21,13 +21,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 
 interface FormValues {
-  prefix: string;
-  firstname: string;
-  lastname: string;
+  fullname: string;
   bio: string;
   insta: string;
   facebook: string;
@@ -45,9 +50,7 @@ interface ProfileFormProps {
 function ProfileForm({ username }: ProfileFormProps) {
   const { control, handleSubmit, register } = useForm<FormValues>({
     defaultValues: {
-      prefix: "",
-      firstname: username, // Set default value for firstname
-      lastname: "",
+      fullname: username, // Set default value for firstname
       bio: "",
       insta: "",
       facebook: "",
@@ -60,6 +63,7 @@ function ProfileForm({ username }: ProfileFormProps) {
   });
 
   const [isPsychiatrist, setIsPsychiatrist] = useState(false);
+  const [isPsychologist, setIspsychologist] = useState(false);
 
   const onSubmit = (data: FormValues) => {
     console.log(data);
@@ -67,67 +71,31 @@ function ProfileForm({ username }: ProfileFormProps) {
   };
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
-      <CardHeader>
-        <CardTitle className="text-center text-2xl">Profile Information</CardTitle>
-        <CardDescription className="text-center text-muted-foreground">Update your profile details</CardDescription>
+    <Card className="w-full max-w-xl mx-auto shadow-lg rounded-xl overflow-hidden">
+      <CardHeader className="bg-blue-500 text-white">
+        <CardTitle className="text-center text-3xl font-semibold">
+          Profile Information
+        </CardTitle>
+        <CardDescription className="text-center text-base mt-1  text-white">
+          Update your profile details
+        </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={control}
-              name="prefix"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Prefix</FormLabel>
-                  <FormControl>
-                    <Select {...field}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a prefix" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>For Doctors</SelectLabel>
-                          <SelectItem value="Dr.">Dr.</SelectItem>
-                          <SelectItem value="Psychiatrist">Psychiatrist</SelectItem>
-                          <SelectItem value="Psychologist">Psychologist</SelectItem>
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>General</SelectLabel>
-                          <SelectItem value="Mr.">Mr.</SelectItem>
-                          <SelectItem value="Mrs.">Mrs.</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={control}
-              name="firstname"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="First Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
+      <CardContent className="p-6 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={control}
-            name="lastname"
+            name="fullname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  Full Name
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Last Name" {...field} />
+                  <Input
+                    className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Full Name"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -139,9 +107,15 @@ function ProfileForm({ username }: ProfileFormProps) {
             name="bio"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Bio</FormLabel>
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  Bio
+                </FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Brief bio" {...field} />
+                  <Textarea
+                    className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Brief bio"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -153,8 +127,15 @@ function ProfileForm({ username }: ProfileFormProps) {
             name="insta"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  Instagram
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Instagram URL" {...field} />
+                  <Input
+                    className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Instagram URL"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -166,8 +147,15 @@ function ProfileForm({ username }: ProfileFormProps) {
             name="facebook"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  Facebook
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Facebook URL" {...field} />
+                  <Input
+                    className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Facebook URL"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -179,24 +167,47 @@ function ProfileForm({ username }: ProfileFormProps) {
             name="twitter"
             render={({ field }) => (
               <FormItem>
+                <FormLabel className="text-lg font-medium text-gray-700">
+                  Twitter
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Twitter URL" {...field} />
+                  <Input
+                    className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Twitter URL"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="flex items-center justify-between space-x-4 rounded-md border p-4 bg-muted">
+          <div className="flex items-center justify-between space-x-4 p-4 rounded-md border bg-gray-50">
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium leading-none">
+              <p className="text-lg font-semibold leading-none text-gray-700">
                 Are you a Psychiatrist?
               </p>
-              <p className="text-sm text-muted-foreground">
-                Sign Up as a Psychiatrist
-              </p>
+              <p className="text-sm text-gray-500">Sign Up as a Psychiatrist</p>
             </div>
-            <Switch checked={isPsychiatrist} onCheckedChange={setIsPsychiatrist} />
+            <Switch
+              checked={isPsychiatrist}
+              onCheckedChange={setIsPsychiatrist}
+              className="focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="flex items-center justify-between space-x-4 p-4 rounded-md border bg-gray-50">
+            <div className="flex-1 space-y-1">
+              <p className="text-lg font-semibold leading-none text-gray-700">
+                Are you a Psychologist?
+              </p>
+              <p className="text-sm text-gray-500">Sign Up as a Psychologist</p>
+            </div>
+            <Switch
+              checked={isPsychologist}
+              onCheckedChange={setIspsychologist}
+              className="focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           {isPsychiatrist && (
@@ -206,15 +217,19 @@ function ProfileForm({ username }: ProfileFormProps) {
                 name="degreeName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Qualification</FormLabel>
+                    <FormLabel className="text-lg font-medium text-gray-700">
+                      Qualification
+                    </FormLabel>
                     <FormControl>
                       <Select {...field}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="w-full border-gray-300 focus:ring-2 focus:ring-blue-500">
                           <SelectValue placeholder="Select a Qualification" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Select Your Highest Qualification</SelectLabel>
+                            <SelectLabel>
+                              Select Your Highest Qualification
+                            </SelectLabel>
                             <SelectItem value="D.M.">D.M.</SelectItem>
                             <SelectItem value="D.P.M.">D.P.M.</SelectItem>
                             <SelectItem value="M.D.">M.D.</SelectItem>
@@ -227,40 +242,63 @@ function ProfileForm({ username }: ProfileFormProps) {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={control}
                 name="degreeFile"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Degree File</FormLabel>
+                    <FormLabel className="text-lg font-medium text-gray-700">
+                      Degree File
+                    </FormLabel>
                     <FormControl>
-                      <Input id="degreeFile" type="file" {...register("degreeFile")} />
+                      <Input
+                        id="degreeFile"
+                        type="file"
+                        {...register("degreeFile")}
+                        className="focus:ring-2 focus:ring-blue-500"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={control}
                 name="registration"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Registration Certificate</FormLabel>
+                    <FormLabel className="text-lg font-medium text-gray-700">
+                      Registration Certificate
+                    </FormLabel>
                     <FormControl>
-                      <Input id="registration" type="file" {...register("registration")} />
+                      <Input
+                        id="registration"
+                        type="file"
+                        {...register("registration")}
+                        className="focus:ring-2 focus:ring-blue-500"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={control}
                 name="website"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Website URL</FormLabel>
+                    <FormLabel className="text-lg font-medium text-gray-700">
+                      Website URL
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Website URL" {...field} />
+                      <Input
+                        className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                        placeholder="Website URL"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -269,8 +307,37 @@ function ProfileForm({ username }: ProfileFormProps) {
             </>
           )}
 
-          <CardFooter className="flex justify-between pt-4">
-            <Button type="submit">Update</Button>
+{isPsychologist && (
+            <>
+              <FormField
+                control={control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-lg font-medium text-gray-700">
+                      Website URL
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="border-gray-300 focus:ring-2 focus:ring-blue-500"
+                        placeholder="Website URL"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+
+          <CardFooter className="flex justify-between pt-6">
+            <Button
+              type="submit"
+              className="w-full py-3 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition-all"
+            >
+              Update Profile
+            </Button>
           </CardFooter>
         </form>
       </CardContent>
@@ -280,21 +347,21 @@ function ProfileForm({ username }: ProfileFormProps) {
 
 export function Profile({ username }: { username: string }) {
   return (
-    <FormProvider {...useForm<FormValues>({
-      defaultValues: {
-        prefix: "",
-        firstname: username, // Use the username prop
-        lastname: "",
-        bio: "",
-        insta: "",
-        facebook: "",
-        twitter: "",
-        degreeName: "",
-        degreeFile: null,
-        registration: null,
-        website: "",
-      },
-    })}>
+    <FormProvider
+      {...useForm<FormValues>({
+        defaultValues: {
+          fullname: username,
+          bio: "",
+          insta: "",
+          facebook: "",
+          twitter: "",
+          degreeName: "",
+          degreeFile: null,
+          registration: null,
+          website: "",
+        },
+      })}
+    >
       <ProfileForm username={username} />
     </FormProvider>
   );
