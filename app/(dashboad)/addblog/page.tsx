@@ -1,5 +1,6 @@
 'use server';
 import { getServerSession } from "next-auth";
+// import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import BlogForm from "@/components/BlogForm";
@@ -21,6 +22,7 @@ export async function addNewBlog(formData: FormData) {
 
 export default async function AddBlogPage() {
   const session = await getServerSession(authOptions);
+  
 
   if (!session) {
     redirect('/api/auth/signin');
@@ -29,6 +31,7 @@ export default async function AddBlogPage() {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-4">Create a New Blog</h1>
+      <h2></h2>
       <BlogForm author={session?.user?.name || ''} />
     </div>
   );

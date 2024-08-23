@@ -1,7 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { query } from "@/lib/db";
-var flag = false
+
 export const authOptions: AuthOptions = {
   providers: [
     GoogleProvider({
@@ -10,73 +10,53 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }: any) {
+    async signIn({ user, profile }: any) {
       try {
         const existingUser = await query(
           "SELECT id FROM users WHERE google_id = $1",
           [profile.sub]
         );
-          console.log("-------------"+profile.sub)
-       
+
         if (existingUser.rows.length > 0) {
+          // Existing user
+          user.isNewUser = false;
           user.id = existingUser.rows[0].id;
-          flag = true
         } else {
+          // New user
           const newUser = await query(
             `INSERT INTO users (google_id, name, email, profile_picture) 
              VALUES ($1, $2, $3, $4) RETURNING id`,
             [profile.sub, user.name, user.email, user.image]
           );
-          flag = false
+          user.isNewUser = true;
           user.id = newUser.rows[0].id;
         }
 
         return true;
       } catch (error) {
-        console.error("Error saving user data:", error);
+        console.error("Error during sign-in:", error);
         return false;
       }
     },
 
-    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      try {
-        // Logic for determining redirect URL
-        const existingUser = await query(
-          "SELECT id FROM users WHERE id = $1",
-          [url]
-        );
-
-      //   return existingUser.rows.length > 0 ? `${baseUrl}/addblog` : `${baseUrl}/editprofile`;
-      // } catch (error) {
-      //   console.error("Error during redirection:", error);
-      //   return baseUrl;
-      // }
-      var uri = ''
-      if (flag){
-        uri = `${baseUrl}/addblog`
-
-      }
-      else{
-        uri = `${baseUrl}/editprofile`
-
-      }
-      console.log("next redirected uri = " + uri)
-      flag = false
-      return uri
-    },
-
     async session({ session, token }: any) {
-      if (token.id) {
+      if (token) {
         session.user.id = token.id;
+        session.user.isNewUser = token.isNewUser; // Persist isNewUser in the session
       }
       return session;
     },
 
     async jwt({ token, user }: any) {
-      if (user?.id) {
+      if (user) {
         token.id = user.id;
+        token.isNewUser = user.isNewUser;
       }
       return token;
+    },
+
+    async redirect({ baseUrl }: { baseUrl: string }) {
+      return `${baseUrl}/editprofile`; // Always redirect to editprofile
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

@@ -38,11 +38,15 @@ interface FormValues {
   website: string;
 }
 
-function ProfileForm() {
+interface ProfileFormProps {
+  username: string;
+}
+
+function ProfileForm({ username }: ProfileFormProps) {
   const { control, handleSubmit, register } = useForm<FormValues>({
     defaultValues: {
       prefix: "",
-      firstname: "",
+      firstname: username, // Set default value for firstname
       lastname: "",
       bio: "",
       insta: "",
@@ -274,26 +278,24 @@ function ProfileForm() {
   );
 }
 
-export function Profile() {
-  const methods = useForm<FormValues>({
-    defaultValues: {
-      prefix: "",
-      firstname: "",
-      lastname: "",
-      bio: "",
-      insta: "",
-      facebook: "",
-      twitter: "",
-      degreeName: "",
-      degreeFile: null,
-      registration: null,
-      website: "",
-    },
-  });
-
+export function Profile({ username }: { username: string }) {
   return (
-    <FormProvider {...methods}>
-      <ProfileForm />
+    <FormProvider {...useForm<FormValues>({
+      defaultValues: {
+        prefix: "",
+        firstname: username, // Use the username prop
+        lastname: "",
+        bio: "",
+        insta: "",
+        facebook: "",
+        twitter: "",
+        degreeName: "",
+        degreeFile: null,
+        registration: null,
+        website: "",
+      },
+    })}>
+      <ProfileForm username={username} />
     </FormProvider>
   );
 }
