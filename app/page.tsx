@@ -28,7 +28,7 @@ const Dashboard: React.FC = async () => {
           <Button className="mt-4">Add Product</Button>
         </div>
       </div> */}
-      <Profile/>
+      {/* <Profile/> */}
     </div>
   );
 };
