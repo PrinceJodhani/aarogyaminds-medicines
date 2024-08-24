@@ -1,3 +1,5 @@
+"use client";
+
 import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import SidePanel from "@/components/SidePanel";
@@ -5,22 +7,30 @@ import TopBar from "@/components/TopBar";
 import { cn } from "@/lib/utils";
 import ClientProvider from "@/components/ClientProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { useState } from "react";
+import { Menu } from "lucide-react";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-export const metadata = {
-  title: "Dashboard",
-  description: "Dashboard view",
-};
+// export const metadata = {
+//   title: "Dashboard",
+//   description: "Dashboard view",
+// };
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <html lang="en">
       <body
@@ -37,8 +47,14 @@ export default function DashboardLayout({
         >
           <ClientProvider>
             <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-              <SidePanel />
-              <div className="flex flex-col">
+              <button
+                className="fixed top-4 left-4 z-50 md:hidden"
+                onClick={toggleSidebar}
+              >
+                <Menu className="h-6 w-6" />
+              </button>
+              <SidePanel isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+              <div className="flex flex-col w-full">
                 <TopBar />
                 <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
                   {children}

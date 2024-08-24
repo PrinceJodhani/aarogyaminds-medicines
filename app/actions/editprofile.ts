@@ -14,6 +14,7 @@ interface EditProfileParams {
   degree?: string;
   degree_url?: string;
 }
+
 export async function EditProfile(data: EditProfileParams) {
   const client = await pool.connect();
   try {

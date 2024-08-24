@@ -1,41 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardFooter,
-} from "@/components/ui/card";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { EditProfile } from "@/app/actions/editprofile";
+import { FetchProfile } from "@/app/actions/fetchprofile";
 import { useSession } from "next-auth/react";
-
-
-
 
 interface FormValues {
   fullname: string;
@@ -57,10 +34,8 @@ interface ProfileFormProps {
 function ProfileForm({ username }: ProfileFormProps) {
   const { data: session } = useSession(); 
 
-  const { control, handleSubmit, register } = useForm<FormValues>({
-
+  const { control, handleSubmit, setValue, register } = useForm<FormValues>({
     defaultValues: {
-  
       fullname: username,
       bio: "",
       insta: "",
@@ -78,6 +53,28 @@ function ProfileForm({ username }: ProfileFormProps) {
   const [isPsychologist, setIsPsychologist] = useState(false);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
 
+  // Fetch and prefill profile data
+  useEffect(() => {
+    async function fetchAndSetProfile() {
+      if (!session?.user?.id) return;
+
+      const profile = await FetchProfile({ id: session.user.id });
+      if (profile) {
+        setValue("fullname", profile.name || "");
+        setValue("bio", profile.bio || "");
+        setValue("insta", profile.insta_url || "");
+        setValue("facebook", profile.fb_url || "");
+        setValue("twitter", profile.twitter_url || "");
+        setValue("degreeName", profile.degree || "");
+        setValue("website", profile.web_url || "");
+        setIsPsychiatrist(profile.psychiatrist || false);
+        setIsPsychologist(profile.psychologist || false);
+      }
+    }
+
+    fetchAndSetProfile();
+  }, [session?.user?.id, setValue]);
+
   const onProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -93,7 +90,6 @@ function ProfileForm({ username }: ProfileFormProps) {
       console.error("User ID not found");
       return;
     }
-    
     try {
       const profileData = {
         id: session.user.id, 
@@ -110,7 +106,6 @@ function ProfileForm({ username }: ProfileFormProps) {
 
       // Call the server action directly
       await EditProfile(profileData);
-
       console.log("Profile updated successfully!");
     } catch (error) {
       console.error("An error occurred while updating the profile:", error);
@@ -148,11 +143,7 @@ function ProfileForm({ username }: ProfileFormProps) {
             <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               {profileImagePreview ? (
-                <Image
-                  src={profileImagePreview}
-                  alt="Profile Image Preview"
-                  width={120}
-                  height={120}
+                <Image src={profileImagePreview} alt="Profile Image Preview" width={120} height={120}
                   className="rounded-full object-cover border-2 border-muted shadow-md"
                 />
               ) : (
@@ -160,18 +151,14 @@ function ProfileForm({ username }: ProfileFormProps) {
                   <span>Upload</span>
                 </div>
               )}
-              <input
-                type="file"
-                accept="image/*"
+              <input type="file" accept="image/*"
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-full"
                 onChange={onProfileImageChange}
               />
             </div>
           </div>
 
-            <FormField
-              control={control}
-              name="fullname"
+            <FormField control={control} name="fullname"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
@@ -184,9 +171,7 @@ function ProfileForm({ username }: ProfileFormProps) {
             />
           </div>
 
-          <FormField
-            control={control}
-            name="bio"
+          <FormField control={control} name="bio"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bio</FormLabel>
@@ -198,9 +183,7 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
-          <FormField
-            control={control}
-            name="insta"
+          <FormField control={control} name="insta"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -211,9 +194,7 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
-          <FormField
-            control={control}
-            name="facebook"
+          <FormField control={control} name="facebook"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -224,9 +205,7 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
-          <FormField
-            control={control}
-            name="twitter"
+          <FormField control={control} name="twitter"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -268,9 +247,7 @@ function ProfileForm({ username }: ProfileFormProps) {
 
           {isPsychiatrist && (
             <>
-              <FormField
-                control={control}
-                name="degreeName"
+              <FormField control={control} name="degreeName"
                 render={() => (
                   <FormItem>
                     <FormLabel>Qualification</FormLabel>

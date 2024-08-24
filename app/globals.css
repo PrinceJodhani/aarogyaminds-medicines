@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.bg-muted {
+  background-color: white; /* Change to your desired background color */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
