@@ -2,6 +2,7 @@
 import { pool } from "@/lib/db";
 
 interface EditProfileParams {
+ 
   id?: string;
   name?: string;
   bio?: string;
@@ -13,6 +14,7 @@ interface EditProfileParams {
   psychologist?: boolean;
   degree?: string;
   degree_url?: string;
+  email?:string;
 }
 
 export async function EditProfile(data: EditProfileParams) {
@@ -64,8 +66,8 @@ export async function EditProfile(data: EditProfileParams) {
       values.push(data.degree_url);
     }
 
-    query += ` ${fields.join(", ")} WHERE id = $${index}`;
-    values.push(data.id);
+    query += ` ${fields.join(", ")} WHERE email = $${index}`;
+    values.push(data.email);
 
     console.log('Executing query:', query);  // Log the query for debugging
     console.log('With values:', values);    // Log the values for debugging

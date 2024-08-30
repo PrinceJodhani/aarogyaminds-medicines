@@ -86,7 +86,7 @@ function ProfileForm({ username }: ProfileFormProps) {
     }
   };
   const onSubmit = async (data: FormValues) => {
-    if (!session?.user?.id) {
+    if (!session?.user?.email) {
       console.error("User ID not found");
       return;
     }
@@ -102,6 +102,7 @@ function ProfileForm({ username }: ProfileFormProps) {
         psychiatrist: isPsychiatrist,
         psychologist: isPsychologist,
         degree: data.degreeName,
+        email: session.user.email,
       };
 
       // Call the server action directly

@@ -1,26 +1,46 @@
-"use client"
+"use client";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Profile } from "@/components/Profile";
-import type { Session } from "next-auth"; // Import Session type
+import { insertUser } from "./serverActions"; // Import the server action
 
 export default function EditProfile() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "loading") return; // Wait for session to load
-
-    if (session) {
-      if (!session.user.isNewUser) {
-        // Redirect to /addblog if the user is not new
-        router.push("/addblog");
+    const handleUserInsertion = async () => {
+      if (session?.user?.email) {
+        try {
+          // Insert the user based on the authentication method
+          await insertUser(session.user.email, session.user.name || "", session.user.password || "");
+        } catch (error) {
+          console.error("Error inserting user:", error);
+        }
       }
-    } else {
-      // If no session, force sign-in
-      signIn();
-    }
+    };
+
+    const handleRedirect = async () => {
+      if (status === "loading") return; // Wait for session to load
+
+      if (session) {
+        await handleUserInsertion();
+
+        if (session.user.isNewUser) {
+          // Stay on edit profile if the user is new
+          console.log("New user, stay on edit profile.");
+        } else {
+          // Redirect to /addblog if the user is not new
+          router.push("/addblog");
+        }
+      } else {
+        // If no session, force sign-in
+        signIn();
+      }
+    };
+
+    handleRedirect();
   }, [session, status, router]);
 
   if (status === "loading") {
@@ -29,7 +49,6 @@ export default function EditProfile() {
 
   return (
     <div>
-      {/* Ensure session?.user.name is properly typed */}
       <Profile username={session?.user.name || ""} />
     </div>
   );
