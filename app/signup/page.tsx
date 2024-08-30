@@ -24,7 +24,6 @@ export default function SignupForm() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-  
     if (!otpSent) {
       // Trigger OTP generation and sending
       const response = await fetch("/api/generate-otp", {
@@ -38,30 +37,23 @@ export default function SignupForm() {
       const result = await response.json();
   
       if (response.ok && result.otp) {
-        setGeneratedOtp(result.otp); // Store generated OTP
+        setGeneratedOtp(result.otp);
         setOtpSent(true);
         alert("OTP sent to your email.");
       } else {
         alert("Signup failed, please try again.");
       }
     } else {
-      // Validate OTP and complete signup
       if (generatedOtp === otp) {
         const result = await signIn("credentials", {
           redirect: false,
           email,
           password,
-          isNewUser:true,
+          signup: "true", // Add this field to indicate it's a sign-up
         });
   
-        console.log("Sign-in result:", result); // Add this line for debugging
-  
         if (result?.ok) {
-          if (result?.isNewUser) {
-            router.push("/editprofile");
-          } else {
-            router.push("/"); // Redirect to home or other page if not a new user
-          }
+          router.push("/editprofile");
         } else {
           alert("Signup failed, please try again.");
         }
