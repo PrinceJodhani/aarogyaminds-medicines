@@ -58,7 +58,7 @@ function ProfileForm({ username }: ProfileFormProps) {
     async function fetchAndSetProfile() {
       if (!session?.user?.id) return;
 
-      const profile = await FetchProfile({ id: session.user.id });
+      const profile = await FetchProfile({ email: session.user.email });
       if (profile) {
         setValue("fullname", profile.name || "");
         setValue("bio", profile.bio || "");
@@ -73,7 +73,7 @@ function ProfileForm({ username }: ProfileFormProps) {
     }
 
     fetchAndSetProfile();
-  }, [session?.user?.id, setValue]);
+  }, [session?.user?.email, setValue]);
 
   const onProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

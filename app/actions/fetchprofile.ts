@@ -3,13 +3,13 @@
 import { pool } from "@/lib/db";
 
 interface FetchProfileParams {
-  id: string;
+  email: string;
 }
 
-export async function FetchProfile({ id }: FetchProfileParams) {
+export async function FetchProfile({ email }: FetchProfileParams) {
   const client = await pool.connect();
   try {
-    const result = await client.query('SELECT * FROM users WHERE id = $1', [id]);
+    const result = await client.query('SELECT * FROM users WHERE email = $1', [email]);
     return result.rows[0]; // Assuming there is only one user per ID
   } catch (error) {
     console.error('Error fetching profile:', error);

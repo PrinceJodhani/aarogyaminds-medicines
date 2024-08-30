@@ -3,9 +3,10 @@ import { getServerSession } from "next-auth";
 // import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import BlogForm from "@/components/BlogForm";
+
 import { insertBlog } from "@/lib/db";
 import TextEditor from "@/components/TextEditor";
+import Link from "next/link";
 
 // Server action for adding a new blog
 export async function addNewBlog(formData: FormData) {
@@ -15,16 +16,19 @@ export async function addNewBlog(formData: FormData) {
   const summary = formData.get("summary") as string;
   const content = formData.get("content") as string;
   const tags = formData.get("tags")?.toString().split(',') || [];
-  const videoUrl = formData.get("videoUrl") as string;
+
   const author = formData.get("author") as string;
 
-  await insertBlog(title, summary, content, tags, videoUrl, author);
+  await insertBlog(title, summary, content, tags, author);
 }
 
 export default async function AddBlogPage() {
   const session = await getServerSession(authOptions);
   
+if(session?.user.isNewUser){
+  redirect('/editprofile');
 
+}
   if (!session) {
     redirect('/api/auth/signin');
   }
