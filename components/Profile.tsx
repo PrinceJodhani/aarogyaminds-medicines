@@ -32,7 +32,9 @@ interface ProfileFormProps {
 }
 
 function ProfileForm({ username }: ProfileFormProps) {
-  const { data: session } = useSession(); 
+  const { data: session } = useSession();
+  console.log("session: ", session);
+  //console.log("data: ",data );
 
   const { control, handleSubmit, setValue, register } = useForm<FormValues>({
     defaultValues: {
@@ -56,7 +58,7 @@ function ProfileForm({ username }: ProfileFormProps) {
   // Fetch and prefill profile data
   useEffect(() => {
     async function fetchAndSetProfile() {
-      if (!session?.user?.id) return;
+      if (!session?.user?.email) return;
 
       const profile = await FetchProfile({ email: session.user.email });
       if (profile) {
