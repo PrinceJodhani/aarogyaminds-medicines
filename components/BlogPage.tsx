@@ -12,7 +12,7 @@ export default async function BlogPage() {
 
   return (
     <div>
-      <BlogForm />
+      <BlogForm author={session.user.name}/>
     </div>
   );
 }

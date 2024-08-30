@@ -11,6 +11,16 @@ import TagsInput from "@/components/TagsInput";
 import { addNewBlog } from "@/app/(dashboad)/addblog/page";
 import { useToast } from "@/components/ui/use-toast";
 
+
+export const defaultValue = {
+  type: 'doc',
+  content: [
+    {
+      type: 'paragraph',
+      content: []
+    }
+  ]
+}
 interface BlogFormProps {
   author: string;
 }
@@ -72,7 +82,8 @@ export default function BlogForm({ author }: BlogFormProps) {
               <CardDescription>You can upload .jpg, .png, .jpeg, svg</CardDescription>
             </div>
             <Label htmlFor="content">Write a Blog</Label>
-            <QuillEditor value={content} onChange={setContent} />
+            {/* <QuillEditor value={content} onChange={setContent} /> */}
+            {/* <Editor initialValue={defaultValue} onChange={setContent} /> */}
             <CardDescription>You can use letters, numbers & periods</CardDescription>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="videoUrl">ENTER EMBEDDED VIDEO</Label>
