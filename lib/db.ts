@@ -10,8 +10,8 @@ export const insertBlog = async (title: string, summary: string, content: string
   const client = await pool.connect();
   try {
     const query = `
-      INSERT INTO mentalhealth (title, short_summary, full_html_blog, tags, video_url, author, created_at)
-      VALUES ($1, $2, $3, $4, $5, $6, NOW())
+      INSERT INTO mentalhealth (title, short_summary, full_html_blog, tags, author, created_at)
+      VALUES ($1, $2, $3, $4, $5, NOW())
       RETURNING id;
     `;
     const values = [title, summary, content, tags.join(','), author];

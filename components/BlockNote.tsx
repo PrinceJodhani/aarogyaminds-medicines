@@ -44,27 +44,26 @@
 import { BlockNoteEditor, PartialBlock } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
-
 import "@blocknote/core/style.css";
 import "@blocknote/react/style.css";
 import "@blocknote/mantine/style.css";
 import React, { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 
-interface EditProps {
+// Disable SSR for this component to prevent hydration errors
+const BlockNote: React.FC<{
   onChange: (html: string) => void;
   initialContent?: string;
   editable?: boolean;
-}
-
-const BlockNote: React.FC<EditProps> = ({ onChange, initialContent, editable = true }) => {
+}> = ({ onChange, initialContent, editable = true }) => {
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [prevHtmlContent, setPrevHtmlContent] = useState<string>("");
 
-  const editor: BlockNoteEditor = useCreateBlockNote({
+  // Only initialize editor on the client-side
+  const editor: BlockNoteEditor | null = useCreateBlockNote({
     initialContent: initialContent ? (JSON.parse(initialContent) as PartialBlock[]) : undefined,
   });
 
-  // Debounced function to update and log content
   const debounce = (func: Function, delay: number) => {
     let timeout: NodeJS.Timeout;
     return (...args: any[]) => {
@@ -74,41 +73,36 @@ const BlockNote: React.FC<EditProps> = ({ onChange, initialContent, editable = t
   };
 
   const updateContent = useCallback(async () => {
-    const html = await editor.blocksToHTMLLossy(editor.document);
-
-    if (html !== prevHtmlContent) { // Only update if content has changed
-      setHtmlContent(html); // Update state
-      onChange(html); // Call the onChange prop
-      setPrevHtmlContent(html); // Update previous content
+    if (editor) {
+      const html = await editor.blocksToHTMLLossy(editor.document);
+      if (html !== prevHtmlContent) {
+        setHtmlContent(html);
+        onChange(html);
+        setPrevHtmlContent(html);
+      }
     }
   }, [editor, onChange, prevHtmlContent]);
 
-  // Create a debounced version of the updateContent function
   const debouncedUpdateContent = useCallback(debounce(updateContent, 500), [updateContent]);
 
   useEffect(() => {
-    // Update content initially
-    debouncedUpdateContent();
-
-    // Set up an interval to periodically check content
-    const interval = setInterval(debouncedUpdateContent, 1000);
-
-    // Cleanup interval on unmount
-    return () => clearInterval(interval);
-  }, [debouncedUpdateContent]);
+    if (editor) {
+      debouncedUpdateContent();
+      const interval = setInterval(debouncedUpdateContent, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [debouncedUpdateContent, editor]);
 
   useEffect(() => {
-    // Log content to console if it changes
     if (htmlContent !== prevHtmlContent) {
       console.log(htmlContent);
     }
   }, [htmlContent, prevHtmlContent]);
 
-  return (
-    <BlockNoteView editor={editor} editable={editable} theme="light" />
-  );
+  if (!editor) return null; // Prevent rendering on the server
+
+  return <BlockNoteView editor={editor} editable={editable} theme="light" />;
 };
 
-export default BlockNote;
-
-
+// Dynamically import BlockNote with SSR disabled
+export default dynamic(() => Promise.resolve(BlockNote), { ssr: false });
