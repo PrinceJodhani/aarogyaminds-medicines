@@ -77,13 +77,6 @@ export default function TextEditor({ onContentChange }: TextEditorProps) {
 
   return (
     <main className="min-h-screen">
-      <div className="flex flex-col py-10 w-full">
-        <TextareaAutosize
-          name="title"
-          placeholder="Untitled"
-          className="w-full resize-none appearance-none overflow-hidden bg-transparent text-5xl font-bold focus-outline-none"
-        />
-      </div>
       {/* BlockNote editor */}
       <BlockNote onChange={handleContentChange} />
       <input type="hidden" name="content" value={content} />

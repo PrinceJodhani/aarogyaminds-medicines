@@ -1,74 +1,137 @@
-// 'use server';
-// import { getServerSession } from "next-auth";
-// // import { useSession } from "next-auth/react";
-// import { redirect } from "next/navigation";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+// 'use client';
+// import { useState } from 'react';
+// import TextEditor from '@/components/TextEditor';
+// import { Input } from '@/components/ui/input';
+// import { useRouter } from 'next/navigation';
+// import { addNewBlog } from './actions';
+// import { useSession } from "next-auth/react";
+// import { Textarea } from '@/components/ui/textarea';
 
-// import { insertBlog } from "@/lib/db";
-// import TextEditor from "@/components/TextEditor";
-// import Link from "next/link";
+// export default function AddBlogPage() {
+//   const [title, setTitle] = useState('');
+//   const [summary, setSummary] = useState('');
+//   const [tags, setTags] = useState('');
+//   const [content, setContent] = useState(''); // State for the blog content (HTML)
+//   const router = useRouter();
+//   const { data: session } = useSession();
 
-// // Server action for adding a new blog
-// export async function addNewBlog(formData: FormData) {
-//    // Marking as a server function
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
 
-//   const title = formData.get("title") as string;
-//   const summary = formData.get("summary") as string;
-//   const content = formData.get("content") as string;
-//   const tags = formData.get("tags")?.toString().split(',') || [];
+//     if (!session?.user?.name) {
+//       alert("User is not logged in. Please sign in first.");
+//       return;
+//     }
 
-//   const author = formData.get("author") as string;
+//     // Form data is collected here
+//     const formData = new FormData();
+//     formData.append('title', title);
+//     formData.append('summary', summary);
+//     formData.append('tags', tags);
+//     formData.append('content', content); // Attach content from the state
 
-//   await insertBlog(title, summary, content, tags, author);
-// }
+//     // Call the server action to save the blog
+//     await addNewBlog(formData, session.user.name, session.user.email);
 
-// export default async function AddBlogPage() {
-//   const session = await getServerSession(authOptions);
-  
-// if(session?.user.isNewUser){
-//   redirect('/editprofile');
-
-// }
-//   if (!session) {
-//     redirect('/api/auth/signin');
-//   }
+//     // Redirect to a success page
+//     router.push('/addblog');
+//   };
 
 //   return (
 //     <div className="container mx-auto py-8">
-//       {/* <h1 className="text-3xl font-bold mb-4">Create a New Blog</h1> */}
-//       <h2></h2>
-//       {/* <BlogForm author={session?.user?.name || ''} /> */}
-//      <TextEditor/>
+//       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+//         {/* Title Input */}
+//         <Input
+//           name="title"
+//           value={title}
+//           onChange={(e) => setTitle(e.target.value)}
+//           placeholder="Blog Title"
+//           required
+//           className="mb-4 p-2 text-2xl font-semibold border-0 rounded"
+//           style={{ fontSize: "2rem" }} // This is for custom font size
+//         />
+
+//         {/* Summary Input */}
+//         <Textarea
+//           name="summary"
+//           value={summary}
+//           onChange={(e) => setSummary(e.target.value)}
+//           placeholder="Short Synopsis"
+//           required
+//           className="mb-4 p-2 border-0 rounded"
+//         />
+
+//         {/* TextEditor for content */}
+//         <TextEditor onContentChange={setContent} />
+
+//         {/* Tags Input */}
+//         <Input
+//           name="tags"
+//           value={tags}
+//           onChange={(e) => setTags(e.target.value)}
+//           placeholder="Enter Tags (comma-separated)"
+//           className="mb-4 p-2 border-0 rounded"
+//         />
+
+//         {/* Submit Button */}
+//         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+//           Publish Blog
+//         </button>
+//       </form>
 //     </div>
 //   );
 // }
-
-
-
-
-
-
-
-
-
 //////////////////////////////////
 /////////////////////////
 //////////////////////
+
+
+
+
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextEditor from '@/components/TextEditor';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { addNewBlog } from './actions';
+import { addNewBlog, getUser } from './actions';
 import { useSession } from "next-auth/react";
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export default function AddBlogPage() {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [tags, setTags] = useState('');
   const [content, setContent] = useState(''); // State for the blog content (HTML)
+  const [resetEditor, setResetEditor] = useState(false); // State to reset editor
+  const [isVerified, setIsVerified] = useState(false); // State to track verification status
+  const [loading, setLoading] = useState(true); // Loading state
   const router = useRouter();
   const { data: session } = useSession();
+
+  useEffect(() => {
+    const checkVerification = async () => {
+      if (!session?.user?.email) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const userData = await getUser(session.user.email);
+
+        // Check if the user is verified
+        if (userData?.verified) {
+          setIsVerified(true);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+
+      setLoading(false); // Stop loading after check
+    };
+
+    checkVerification();
+  }, [session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +141,9 @@ export default function AddBlogPage() {
       return;
     }
 
+    const userData = await getUser(session.user.email);
+    console.log("userData: ", userData);
+
     // Form data is collected here
     const formData = new FormData();
     formData.append('title', title);
@@ -86,35 +152,76 @@ export default function AddBlogPage() {
     formData.append('content', content); // Attach content from the state
 
     // Call the server action to save the blog
-    await addNewBlog(formData, session.user.name);
+    await addNewBlog(formData, userData.name, session.user.email);
 
-    // Redirect to a success page
-    router.push('/success');
+    // Clear inputs after successful submission
+    setTitle('');
+    setSummary('');
+    setTags('');
+    setContent(''); // Clear content state
+    setResetEditor(true); // Trigger content reset in the TextEditor
+
+    // Refresh the page to reset the form
+    window.location.reload();
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading...</div>;
+  }
+
+  if (!isVerified) {
+    return (
+      <div className="flex justify-center mt-20">
+        <Card className="max-w-lg text-center shadow-2xl border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-gray-800">Access Pending</CardTitle>
+            <CardDescription className="text-gray-500">Your account verification is in progress</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700 text-lg">
+              You can access add blog feature once the admin completes the verification process.
+            </p>
+            <p className="text-gray-700 text-lg">
+              In the meantime, feel free to explore other features of the platform. We appreciate your patience!
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-4">Create a New Blog</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4" onKeyDown={handleKeyDown}>
         {/* Title Input */}
         <Input
           name="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter Blog Title"
+          placeholder="Blog Title"
           required
-          className="mb-4 p-2 border rounded"
+          className="mb-4 p-2 text-2xl font-semibold border-0 rounded"
+          style={{ fontSize: "2rem" }}
         />
 
         {/* Summary Input */}
-        <Input
+        <Textarea
           name="summary"
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
-          placeholder="Enter Short Summary"
+          placeholder="Short Synopsis"
           required
-          className="mb-4 p-2 border rounded"
+          className="mb-4 p-2 border-0 rounded"
         />
+
+        {/* TextEditor for content */}
+        <TextEditor onContentChange={setContent} />
 
         {/* Tags Input */}
         <Input
@@ -122,11 +229,8 @@ export default function AddBlogPage() {
           value={tags}
           onChange={(e) => setTags(e.target.value)}
           placeholder="Enter Tags (comma-separated)"
-          className="mb-4 p-2 border rounded"
+          className="mb-4 p-2 border-0 rounded"
         />
-
-        {/* TextEditor for content */}
-        <TextEditor onContentChange={setContent} />
 
         {/* Submit Button */}
         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
