@@ -1,93 +1,3 @@
-// 'use client';
-// import { useState } from 'react';
-// import TextEditor from '@/components/TextEditor';
-// import { Input } from '@/components/ui/input';
-// import { useRouter } from 'next/navigation';
-// import { addNewBlog } from './actions';
-// import { useSession } from "next-auth/react";
-// import { Textarea } from '@/components/ui/textarea';
-
-// export default function AddBlogPage() {
-//   const [title, setTitle] = useState('');
-//   const [summary, setSummary] = useState('');
-//   const [tags, setTags] = useState('');
-//   const [content, setContent] = useState(''); // State for the blog content (HTML)
-//   const router = useRouter();
-//   const { data: session } = useSession();
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     if (!session?.user?.name) {
-//       alert("User is not logged in. Please sign in first.");
-//       return;
-//     }
-
-//     // Form data is collected here
-//     const formData = new FormData();
-//     formData.append('title', title);
-//     formData.append('summary', summary);
-//     formData.append('tags', tags);
-//     formData.append('content', content); // Attach content from the state
-
-//     // Call the server action to save the blog
-//     await addNewBlog(formData, session.user.name, session.user.email);
-
-//     // Redirect to a success page
-//     router.push('/addblog');
-//   };
-
-//   return (
-//     <div className="container mx-auto py-8">
-//       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-//         {/* Title Input */}
-//         <Input
-//           name="title"
-//           value={title}
-//           onChange={(e) => setTitle(e.target.value)}
-//           placeholder="Blog Title"
-//           required
-//           className="mb-4 p-2 text-2xl font-semibold border-0 rounded"
-//           style={{ fontSize: "2rem" }} // This is for custom font size
-//         />
-
-//         {/* Summary Input */}
-//         <Textarea
-//           name="summary"
-//           value={summary}
-//           onChange={(e) => setSummary(e.target.value)}
-//           placeholder="Short Synopsis"
-//           required
-//           className="mb-4 p-2 border-0 rounded"
-//         />
-
-//         {/* TextEditor for content */}
-//         <TextEditor onContentChange={setContent} />
-
-//         {/* Tags Input */}
-//         <Input
-//           name="tags"
-//           value={tags}
-//           onChange={(e) => setTags(e.target.value)}
-//           placeholder="Enter Tags (comma-separated)"
-//           className="mb-4 p-2 border-0 rounded"
-//         />
-
-//         {/* Submit Button */}
-//         <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-//           Publish Blog
-//         </button>
-//       </form>
-//     </div>
-//   );
-// }
-//////////////////////////////////
-/////////////////////////
-//////////////////////
-
-
-
-
 'use client';
 import { useEffect, useState } from 'react';
 import TextEditor from '@/components/TextEditor';
@@ -240,3 +150,6 @@ export default function AddBlogPage() {
     </div>
   );
 }
+
+
+//////////////////
