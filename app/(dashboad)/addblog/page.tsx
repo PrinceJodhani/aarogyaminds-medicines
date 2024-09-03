@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import Select from 'react-select'; // Import react-select
 import { CldUploadWidget } from 'next-cloudinary'; // Import CldUploadWidget
+import Image from 'next/image';
 
 interface TagOption {
   value: string;
@@ -177,12 +178,12 @@ export default function AddBlogPage() {
           // onUpload={(result) => setImageUrl(result?.info?.secure_url || '')}
         >
           {({ open }) => (
-            <button type="button" onClick={() => open()} className="mb-4 bg-blue-500 text-white p-2 rounded">
+            <button type="button" onClick={() => open()} className="mb-4 bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300">
               Upload an Image
             </button>
           )}
         </CldUploadWidget>
-          { imageUrl ? <img src={imageUrl}/> : "" }
+          { imageUrl ? <Image src={imageUrl} width={400} height={400} alt="Blog image" /> : "" }
         {/* TextEditor for content */}
         <TextEditor onContentChange={setContent} />
 
@@ -197,7 +198,7 @@ export default function AddBlogPage() {
         />
 
         {/* Submit Button */}
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+        <button type="submit" className="mb-4 bg-black text-white p-2 rounded hover:bg-gray-800 transition-colors duration-300">
           Publish Blog
         </button>
       </form>
