@@ -8,9 +8,11 @@ export async function addNewBlog(data: FormData, author: string, email: string) 
   const summary = data.get('summary') as string;
   const content = data.get('content') as string; // This is the HTML content
   const tags = (data.get('tags') as string)?.split(',');
+  const img = data.get('imageUrl') as string;
+
 
   // Ensure that the HTML content is inserted into the database
-  await insertBlog(title, summary, content, tags, author, email);
+  await insertBlog(title, summary, content, tags, author, email,img);
 }
 
 export async function getUser(email: string){

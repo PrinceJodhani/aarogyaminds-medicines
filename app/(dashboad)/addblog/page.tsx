@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import TextEditor from '@/components/TextEditor';
 import { Input } from '@/components/ui/input';
@@ -7,15 +8,52 @@ import { addNewBlog, getUser } from './actions';
 import { useSession } from "next-auth/react";
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import Select from 'react-select'; // Import react-select
+import { CldUploadWidget } from 'next-cloudinary'; // Import CldUploadWidget
+
+interface TagOption {
+  value: string;
+  label: string;
+}
+
+const tagOptions: TagOption[] = [
+  { value: 'Mental health', label: 'Mental health' },
+  { value: 'Child mental health', label: 'Child mental health' },
+  { value: 'Latest development', label: 'Latest development' },
+  { value: 'Mental health news', label: 'Mental health news' },
+  { value: 'Adult mental health', label: 'Adult mental health' },
+  { value: 'Geriatric psychiatry', label: 'Geriatric psychiatry' },
+  { value: 'Sexual health', label: 'Sexual health' },
+  { value: 'Emotional health', label: 'Emotional health' },
+  { value: 'Adolescent mental health', label: 'Adolescent mental health' },
+  { value: 'Couple counseling', label: 'Couple counseling' },
+  { value: 'Substance abuse', label: 'Substance abuse' },
+  { value: 'Addiction', label: 'Addiction' },
+  { value: 'Preventive mental health', label: 'Preventive mental health' },
+  { value: 'Psychology', label: 'Psychology' },
+  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
+  { value: 'School mental health', label: 'School mental health' },
+  { value: 'Corporate mental health', label: 'Corporate mental health' },
+  { value: 'Success story', label: 'Success story' },
+  { value: 'IPS news', label: 'IPS news' },
+  { value: 'Patient story', label: 'Patient story' },
+  { value: 'Stories of hope', label: 'Stories of hope' },
+  { value: 'Workplace mental health', label: 'Workplace mental health' },
+  { value: 'Research', label: 'Research' },
+  { value: 'Academics', label: 'Academics' },
+  { value: 'Positivity', label: 'Positivity' },
+  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
+];
 
 export default function AddBlogPage() {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
-  const [tags, setTags] = useState('');
-  const [content, setContent] = useState(''); // State for the blog content (HTML)
-  const [resetEditor, setResetEditor] = useState(false); // State to reset editor
-  const [isVerified, setIsVerified] = useState(false); // State to track verification status
-  const [loading, setLoading] = useState(true); // Loading state
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]); // State for selected tags
+  const [content, setContent] = useState('');
+  const [imageUrl, setImageUrl] = useState<string>(''); // State for uploaded image URL
+  const [resetEditor, setResetEditor] = useState(false); 
+  const [isVerified, setIsVerified] = useState(false); 
+  const [loading, setLoading] = useState(true); 
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -29,7 +67,6 @@ export default function AddBlogPage() {
       try {
         const userData = await getUser(session.user.email);
 
-        // Check if the user is verified
         if (userData?.verified) {
           setIsVerified(true);
         }
@@ -37,7 +74,7 @@ export default function AddBlogPage() {
         console.error('Error fetching user data:', error);
       }
 
-      setLoading(false); // Stop loading after check
+      setLoading(false);
     };
 
     checkVerification();
@@ -54,24 +91,22 @@ export default function AddBlogPage() {
     const userData = await getUser(session.user.email);
     console.log("userData: ", userData);
 
-    // Form data is collected here
     const formData = new FormData();
     formData.append('title', title);
     formData.append('summary', summary);
-    formData.append('tags', tags);
-    formData.append('content', content); // Attach content from the state
+    formData.append('tags', selectedTags.map(tag => tag.value).join(',')); // Attach selected tags
+    formData.append('content', content);
+    formData.append('imageUrl', imageUrl); // Attach image URL
 
-    // Call the server action to save the blog
     await addNewBlog(formData, userData.name, session.user.email);
 
-    // Clear inputs after successful submission
     setTitle('');
     setSummary('');
-    setTags('');
-    setContent(''); // Clear content state
-    setResetEditor(true); // Trigger content reset in the TextEditor
+    setSelectedTags([]);
+    setContent('');
+    setImageUrl(''); // Clear image URL
+    setResetEditor(true);
 
-    // Refresh the page to reset the form
     window.location.reload();
   };
 
@@ -95,7 +130,7 @@ export default function AddBlogPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-700 text-lg">
-              You can access add blog feature once the admin completes the verification process.
+              You can access the add blog feature once the admin completes the verification process.
             </p>
             <p className="text-gray-700 text-lg">
               In the meantime, feel free to explore other features of the platform. We appreciate your patience!
@@ -130,16 +165,35 @@ export default function AddBlogPage() {
           className="mb-4 p-2 border-0 rounded"
         />
 
+        {/* Image Upload */}
+        <CldUploadWidget
+          uploadPreset="blogthumb"
+          onSuccess={({event,info})=>{
+            if (event === "success"){
+              setImageUrl(info?.url)
+              console.log(JSON.stringify(info));
+            }
+          }}
+          // onUpload={(result) => setImageUrl(result?.info?.secure_url || '')}
+        >
+          {({ open }) => (
+            <button type="button" onClick={() => open()} className="mb-4 bg-blue-500 text-white p-2 rounded">
+              Upload an Image
+            </button>
+          )}
+        </CldUploadWidget>
+          { imageUrl ? <img src={imageUrl}/> : "" }
         {/* TextEditor for content */}
         <TextEditor onContentChange={setContent} />
 
-        {/* Tags Input */}
-        <Input
-          name="tags"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          placeholder="Enter Tags (comma-separated)"
-          className="mb-4 p-2 border-0 rounded"
+        {/* Tags Multi-Select */}
+        <Select
+          isMulti
+          options={tagOptions}
+          value={selectedTags}
+          onChange={setSelectedTags}
+          placeholder="Select tags"
+          className="mb-4"
         />
 
         {/* Submit Button */}
@@ -150,6 +204,3 @@ export default function AddBlogPage() {
     </div>
   );
 }
-
-
-//////////////////
