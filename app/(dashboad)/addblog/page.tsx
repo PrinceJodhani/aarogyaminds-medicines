@@ -8,8 +8,8 @@ import { addNewBlog, getUser } from './actions';
 import { useSession } from "next-auth/react";
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import Select from 'react-select'; // Import react-select
-import { CldUploadWidget } from 'next-cloudinary'; // Import CldUploadWidget
+import Select from 'react-select';
+import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 
 interface TagOption {
@@ -48,15 +48,25 @@ const tagOptions: TagOption[] = [
 
 export default function AddBlogPage() {
   const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState('');
   const [summary, setSummary] = useState('');
-  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]); // State for selected tags
+  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
   const [content, setContent] = useState('');
-  const [imageUrl, setImageUrl] = useState<string>(''); // State for uploaded image URL
-  const [resetEditor, setResetEditor] = useState(false); 
-  const [isVerified, setIsVerified] = useState(false); 
-  const [loading, setLoading] = useState(true); 
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [resetEditor, setResetEditor] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { data: session } = useSession();
+
+  useEffect(() => {
+    const name = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+
+    setSlug(name);
+  }, [title]);
 
   useEffect(() => {
     const checkVerification = async () => {
@@ -90,14 +100,14 @@ export default function AddBlogPage() {
     }
 
     const userData = await getUser(session.user.email);
-    console.log("userData: ", userData);
 
     const formData = new FormData();
     formData.append('title', title);
+    formData.append('slug', slug); // Append slug
     formData.append('summary', summary);
-    formData.append('tags', selectedTags.map(tag => tag.value).join(',')); // Attach selected tags
+    formData.append('tags', selectedTags.map(tag => tag.value).join(',')); // Attach selected tags as a comma-separated string
     formData.append('content', content);
-    formData.append('imageUrl', imageUrl); // Attach image URL
+    formData.append('imageUrl', imageUrl);
 
     await addNewBlog(formData, userData.name, session.user.email);
 
@@ -105,7 +115,7 @@ export default function AddBlogPage() {
     setSummary('');
     setSelectedTags([]);
     setContent('');
-    setImageUrl(''); // Clear image URL
+    setImageUrl('');
     setResetEditor(true);
 
     window.location.reload();
@@ -169,13 +179,12 @@ export default function AddBlogPage() {
         {/* Image Upload */}
         <CldUploadWidget
           uploadPreset="blogthumb"
-          onSuccess={({event,info})=>{
-            if (event === "success"){
-              setImageUrl(info?.url)
+          onSuccess={({ event, info }) => {
+            if (event === "success") {
+              setImageUrl(info?.url);
               console.log(JSON.stringify(info));
             }
           }}
-          // onUpload={(result) => setImageUrl(result?.info?.secure_url || '')}
         >
           {({ open }) => (
             <button type="button" onClick={() => open()} className="mb-4 bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300">
@@ -183,7 +192,8 @@ export default function AddBlogPage() {
             </button>
           )}
         </CldUploadWidget>
-          { imageUrl ? <Image src={imageUrl} width={400} height={400} alt="Blog image" /> : "" }
+        {imageUrl ? <Image src={imageUrl} width={400} height={400} alt="Blog image" /> : ""}
+
         {/* TextEditor for content */}
         <TextEditor onContentChange={setContent} />
 
