@@ -56,7 +56,12 @@ export default function AddBlogPage() {
   const [resetEditor, setResetEditor] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [wordCount, setWordCount] = useState(0);
+  const wordLimit = 30;
+
   const router = useRouter();
+
+
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -90,6 +95,23 @@ export default function AddBlogPage() {
 
     checkVerification();
   }, [session]);
+
+
+  const countWords = (text:any) => {
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  };
+
+ // Handle summary input and word limit enforcement
+ const handleSummaryChange = (e:any) => {
+  const text = e.target.value;
+  const words = countWords(text);
+
+  if (words <= wordLimit) {
+    setSummary(text);
+    setWordCount(words);
+  }
+};
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,15 +188,18 @@ export default function AddBlogPage() {
           style={{ fontSize: "2rem" }}
         />
 
-        {/* Summary Input */}
-        <Textarea
+          {/* Summary Input with word limit and counter */}
+          <Textarea
           name="summary"
           value={summary}
-          onChange={(e) => setSummary(e.target.value)}
-          placeholder="Short Synopsis"
+          onChange={handleSummaryChange}
+          placeholder="Short Synopsis (Max 30 words)"
           required
           className="mb-4 p-2 border-0 rounded"
         />
+        <p className="text-right text-sm text-gray-500">
+          {wordCount} / {wordLimit} words
+        </p>
 
         {/* Image Upload */}
         <CldUploadWidget
