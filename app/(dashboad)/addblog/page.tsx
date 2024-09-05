@@ -182,7 +182,7 @@ export default function AddBlogPage() {
           name="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Blog Title"
+          placeholder="Title"
           required
           className="mb-4 p-2 text-2xl font-semibold border-0 rounded"
           style={{ fontSize: "2rem" }}
@@ -193,7 +193,7 @@ export default function AddBlogPage() {
           name="summary"
           value={summary}
           onChange={handleSummaryChange}
-          placeholder="Short Synopsis (Max 30 words)"
+          placeholder="Synopsis"
           required
           className="mb-4 p-2 border-0 rounded"
         />
