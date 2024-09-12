@@ -14,6 +14,12 @@ import { EditProfile } from "@/app/actions/editprofile";
 import { FetchProfile } from "@/app/actions/fetchprofile";
 import { useSession } from "next-auth/react";
 
+import { CldUploadWidget } from "next-cloudinary"; 
+import { toast } from "@/components/ui/use-toast"; 
+
+import { useRouter } from "next/navigation";  
+import Link from "next/link";
+
 interface FormValues {
   fullname: string;
   bio: string;
@@ -21,10 +27,10 @@ interface FormValues {
   facebook: string;
   twitter: string;
   degreeName: string;
-  degreeFile: FileList | null;
-  registration: FileList | null;
+  degreeFile: string;
+  reg_certy: string;
   website: string;
-  profileImage: FileList | null;
+  profileImage: string;
 }
 
 interface ProfileFormProps {
@@ -32,6 +38,9 @@ interface ProfileFormProps {
 }
 
 function ProfileForm({ username }: ProfileFormProps) {
+  const router = useRouter();
+
+
   const { data: session } = useSession();
   console.log("session: ", session);
   //console.log("data: ",data );
@@ -44,10 +53,10 @@ function ProfileForm({ username }: ProfileFormProps) {
       facebook: "",
       twitter: "",
       degreeName: "",
-      degreeFile: null,
-      registration: null,
+      degreeFile: "",
+      reg_certy: "",
       website: "",
-      profileImage: null,
+      profileImage: "",
     },
   });
 
@@ -69,6 +78,7 @@ function ProfileForm({ username }: ProfileFormProps) {
         setValue("twitter", profile.twitter_url || "");
         setValue("degreeName", profile.degree || "");
         setValue("website", profile.web_url || "");
+        setProfileImagePreview(profile.profile_picture);
         setIsPsychiatrist(profile.psychiatrist || false);
         setIsPsychologist(profile.psychologist || false);
       }
@@ -77,7 +87,23 @@ function ProfileForm({ username }: ProfileFormProps) {
     fetchAndSetProfile();
   }, [session?.user?.email, setValue]);
 
+  const handleProfileImageUpload = (result: any) => {
+    setProfileImagePreview(result.info.secure_url);
+    setValue("profileImage", result.info.secure_url);
+  };
+
+  const handleDegreeFileUpload = (result: any) => {
+    setValue("degreeFile", result.info.secure_url);
+  };
+
+  const handleRegistrationUpload = (result: any) => {
+    setValue("reg_certy", result.info.secure_url);
+  
+  };
+
+
   const onProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -88,13 +114,14 @@ function ProfileForm({ username }: ProfileFormProps) {
     }
   };
   const onSubmit = async (data: FormValues) => {
+
     if (!session?.user?.email) {
       console.error("User ID not found");
       return;
     }
     try {
       const profileData = {
-        id: session.user.id, 
+        id: session.user.id,
         name: data.fullname,
         bio: data.bio,
         insta_url: data.insta,
@@ -105,12 +132,34 @@ function ProfileForm({ username }: ProfileFormProps) {
         psychologist: isPsychologist,
         degree: data.degreeName,
         email: session.user.email,
+        profileImage: data.profileImage,
+        degreeFile: data.degreeFile,
+        registration: data.reg_certy,
       };
-
+     
+      console.log(profileData.profileImage);
+      console.log(profileData.degreeFile);
+      
       // Call the server action directly
       await EditProfile(profileData);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been updated successfully.",
+        variant: "success", // Assuming your toast supports variants like success
+      });
+       
+    setTimeout(() => {
+      router.push("/addblog");
+    }, 1000);
+
       console.log("Profile updated successfully!");
     } catch (error) {
+      toast({
+        title: "Error",
+        description: "There was an issue updating your profile. Please try again.",
+        variant: "destructive", // Assuming your toast supports variants like destructive (for errors)
+      });
+    
       console.error("An error occurred while updating the profile:", error);
     }
   };
@@ -144,24 +193,41 @@ function ProfileForm({ username }: ProfileFormProps) {
           <div className="gap-4">
             {/* Profile Image Upload */}
             <div className="flex flex-col items-center space-y-4">
-            <div className="relative">
-              {profileImagePreview ? (
-                <Image src={profileImagePreview} alt="Profile Image Preview" width={120} height={120}
+              <CldUploadWidget
+                uploadPreset="profile"
+                onSuccess={({ event, info }) => {
+                  if (event === "success") {
+                    setProfileImagePreview(info?.url);
+                    setValue("profileImage", info?.url);
+                    console.log(JSON.stringify(info)); // For debugging, you can remove this later
+                  }
+                }}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={()=>open()}
+                    className="mb-4 bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300"
+                  >
+                    Upload Profile Image
+                  </button>
+                )}
+              </CldUploadWidget>
+              {profileImagePreview && (
+                <Image
+                  src={profileImagePreview}
+                  alt="Profile Image Preview"
+                  width={120}
+                  height={120}
                   className="rounded-full object-cover border-2 border-muted shadow-md"
                 />
-              ) : (
-                <div className="h-28 w-28 rounded-full border-2 border-dashed border-muted flex items-center justify-center text-muted-foreground">
-                  <span>Upload</span>
-                </div>
               )}
-              <input type="file" accept="image/*"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer rounded-full"
-                onChange={onProfileImageChange}
-              />
             </div>
-          </div>
 
-            <FormField control={control} name="fullname"
+
+            <FormField
+              control={control}
+              name="fullname"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
@@ -174,7 +240,9 @@ function ProfileForm({ username }: ProfileFormProps) {
             />
           </div>
 
-          <FormField control={control} name="bio"
+          <FormField
+            control={control}
+            name="bio"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Bio</FormLabel>
@@ -186,7 +254,9 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
-          <FormField control={control} name="insta"
+          <FormField
+            control={control}
+            name="insta"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -197,7 +267,9 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
-          <FormField control={control} name="facebook"
+          <FormField
+            control={control}
+            name="facebook"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -208,7 +280,9 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
-          <FormField control={control} name="twitter"
+          <FormField
+            control={control}
+            name="twitter"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -250,7 +324,9 @@ function ProfileForm({ username }: ProfileFormProps) {
 
           {isPsychiatrist && (
             <>
-              <FormField control={control} name="degreeName"
+              <FormField
+                control={control}
+                name="degreeName"
                 render={() => (
                   <FormItem>
                     <FormLabel>Qualification</FormLabel>
@@ -276,40 +352,47 @@ function ProfileForm({ username }: ProfileFormProps) {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={control}
-                name="degreeFile"
-                render={({ field }) => (
+
+
+             <CldUploadWidget uploadPreset="blogthumb" onSuccess={({ event, info }) => {
+                if (event === "success") {
+                  setValue("degreeFile", info?.url);
+                  console.log(JSON.stringify(info));
+                }
+              }}>
+                {({ open }) => (
                   <FormItem>
                     <FormLabel>Degree File</FormLabel>
                     <FormControl>
-                      <Input
-                        id="degreeFile"
-                        type="file"
-                        {...register("degreeFile")}
-                      />
+                      <Button type="button" onClick={() => open()}>
+                        Upload Degree File
+                      </Button>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-              <FormField
-                control={control}
-                name="registration"
-                render={({ field }) => (
+              </CldUploadWidget>
+
+              <CldUploadWidget uploadPreset="profile" onSuccess={({ event, info }) => {
+                if (event === "success") {
+                  setValue("reg_certy", info?.url);
+                  // console.log(JSON.stringify(info?.url));
+                }
+              }}>
+                {({ open }) => (
                   <FormItem>
                     <FormLabel>Registration Certificate</FormLabel>
                     <FormControl>
-                      <Input
-                        id="registration"
-                        type="file"
-                        {...register("registration")}
-                      />
+                      <Button type="button" onClick={()=>open()}>
+                        Upload Registration Certificate
+                      </Button>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              </CldUploadWidget>
+
+
               <FormField
                 control={control}
                 name="website"
@@ -343,7 +426,9 @@ function ProfileForm({ username }: ProfileFormProps) {
           )}
 
           <CardFooter className="flex justify-between pt-4">
-            <Button onClick={handleSubmit(onSubmit)} type="submit">Update</Button>
+            <Button onClick={handleSubmit(onSubmit)} type="submit">
+            Save Changes
+            </Button>
           </CardFooter>
         </form>
       </CardContent>
@@ -362,10 +447,10 @@ export function Profile({ username }: { username: string }) {
           facebook: "",
           twitter: "",
           degreeName: "",
-          degreeFile: null,
-          registration: null,
+          degreeFile: "",
+          reg_certy: "",
           website: "",
-          profileImage: null,
+          profileImage: "",
         },
       })}
     >
@@ -373,3 +458,5 @@ export function Profile({ username }: { username: string }) {
     </FormProvider>
   );
 }
+
+export default Profile;

@@ -2,7 +2,9 @@
 import { pool } from "@/lib/db";
 
 interface EditProfileParams {
- 
+  degreeFile: any;
+  profileImage: any;
+  registration?: string;
   id?: string;
   name?: string;
   bio?: string;
@@ -13,13 +15,16 @@ interface EditProfileParams {
   psychiatrist?: boolean;
   psychologist?: boolean;
   degree?: string;
-  degree_url?: string;
-  email?:string;
+  email?: string;
 }
 
 export async function EditProfile(data: EditProfileParams) {
   const client = await pool.connect();
   try {
+
+    
+    console.log(data.registration);
+
     let query = `UPDATE users SET`;
     const fields: string[] = [];
     const values: any[] = [];
@@ -61,18 +66,28 @@ export async function EditProfile(data: EditProfileParams) {
       fields.push(`degree = $${index++}`);
       values.push(data.degree);
     }
-    if (data.degree_url) {
+    if (data.degreeFile) {
       fields.push(`degree_url = $${index++}`);
-      values.push(data.degree_url);
+      values.push(data.degreeFile);
+    }
+    if (data.profileImage) {
+      fields.push(`profile_picture = $${index++}`);
+      values.push(data.profileImage);
+    }
+    if (data.registration) {
+      fields.push(`reg_certy = $${index++}`);
+      values.push(data.registration);
     }
 
-    query += ` ${fields.join(", ")} WHERE email = $${index}`;
+    query += ` ${fields.join(", ")} WHERE email = $${index} RETURNING *`;
     values.push(data.email);
 
     console.log('Executing query:', query);  // Log the query for debugging
     console.log('With values:', values);    // Log the values for debugging
 
-    await client.query(query, values);
+    const result = await client.query(query, values);
+    console.log('Update result:', result.rows);  // Log the result of the update
+
   } catch (error) {
     console.error('Error updating profile:', error);  // Catch and log any errors
     throw new Error('Failed to update profile');
