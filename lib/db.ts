@@ -22,4 +22,16 @@ export const insertBlog = async (title: string, summary: string, content: string
   }
 };
 
+
+
+export const deleteBlog = async (id: number) => {
+  const client = await pool.connect();
+  try {
+    const query = `DELETE FROM mentalhealth WHERE id = $1`;
+    await client.query(query, [id]);
+  } finally {
+    client.release();
+  }
+};
+
 //

@@ -145,9 +145,26 @@ function ProfileForm({ username }: ProfileFormProps) {
       toast({
         title: "Profile Updated",
         description: "Your profile has been updated successfully.",
-        variant: "success", // Assuming your toast supports variants like success
+        variant: "success", 
       });
-       
+        
+      if (session.user.isNewUser && isPsychiatrist) {
+        const response = await fetch('/api/emailrequest', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileData),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to send approval email.");
+        }
+  
+        console.log("Approval email sent to admin.");
+      }
+
+
     setTimeout(() => {
       router.push("/addblog");
     }, 1000);
