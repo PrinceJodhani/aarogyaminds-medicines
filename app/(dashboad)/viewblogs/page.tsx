@@ -2,7 +2,7 @@
 
 import { getServerSession } from "next-auth";
 import { getBlogsByEmail } from "./actions";
-import { BlogsTable } from "./BlogsTable"; // Importing the client component
+import { BlogsTableWithSearch } from "./BlogsTableWithSearch"; // Importing the client component that handles search
 
 export const dynamic = "force-dynamic"; // Ensures dynamic content
 
@@ -22,7 +22,8 @@ const ViewBlogsPage = async () => {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">My Blogs</h1>
-      <BlogsTable blogs={blogs} />
+      {/* Passing blogs data to the client component that handles search */}
+      <BlogsTableWithSearch blogs={blogs} />
     </div>
   );
 };

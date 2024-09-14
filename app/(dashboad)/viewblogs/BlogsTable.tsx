@@ -1,32 +1,31 @@
-// app/(dashboard)/viewblogs/BlogsTable.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { deleteBlogById } from "./actions";
+import Link from "next/link";
 
 interface Blog {
   id: number;
   title: string;
-  short_summary: string;
+  slug: string;
   created_at: string;
 }
 
 export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
   const router = useRouter();
-  const [deletingId, setDeletingId] = useState<number | null>(null); // Track deleting state
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (slug: string) => {
     const confirmed = confirm("Are you sure you want to delete this blog?");
     if (confirmed) {
-      setDeletingId(id); // Set deleting state
+      setDeletingId(slug);
       try {
-        const response = await fetch(`/dashboard/viewblogs/delete?id=${id}`, {
-          method: 'DELETE',
-        });
-
-        if (response.ok) {
+        const response = await deleteBlogById(slug);
+        if (response != null) {
           alert("Blog deleted successfully!");
-          router.refresh(); // Refresh the page after deletion
+          router.refresh();
         } else {
           alert("Failed to delete the blog.");
         }
@@ -34,49 +33,82 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
         console.error("An error occurred while deleting the blog:", error);
         alert("An error occurred. Please try again.");
       } finally {
-        setDeletingId(null); // Reset deleting state
+        setDeletingId(null);
       }
     }
   };
 
+  // Function to sort blogs by date
+  const sortedBlogs = blogs.sort((a, b) => {
+    if (sortOrder === "asc") {
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+    } else {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    }
+  });
+
   return (
-    <table className="w-full border-collapse">
-      <thead>
-        <tr>
-          <th className="border p-2">Title</th>
-          <th className="border p-2">Summary</th>
-          <th className="border p-2">Created At</th>
-          <th className="border p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {blogs.length > 0 ? (
-          blogs.map((blog) => (
-            <tr key={blog.id}>
-              <td className="border p-2">{blog.title}</td>
-              <td className="border p-2">{blog.short_summary}</td>
-              <td className="border p-2">
-                {new Date(blog.created_at).toLocaleDateString()}
-              </td>
-              <td className="border p-2">
-                <button
-                  onClick={() => handleDelete(blog.id)}
-                  disabled={deletingId === blog.id} // Disable button while deleting
-                  className="bg-red-500 text-white px-2 py-1 rounded"
-                >
-                  {deletingId === blog.id ? "Deleting..." : "Delete"}
-                </button>
+    <>
+      {/* Sorting controls */}
+      <div className="flex justify-end mb-4">
+        <button
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Sort by Date ({sortOrder === "asc" ? "Oldest First" : "Newest First"})
+        </button>
+      </div>
+
+      <table className="w-full border-collapse">
+        <thead>
+          <tr>
+            <th className="border p-2">Title</th>
+            <th className="border p-2">Created At</th>
+            <th className="border p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedBlogs.length > 0 ? (
+            sortedBlogs.map((blog) => (
+              <tr key={blog.slug}>
+                <td className="border p-2">{blog.title}</td>
+                <td className="border p-2">
+                  {new Date(blog.created_at).toLocaleDateString()}
+                </td>
+                <td className="border p-2">
+                  <button
+                    className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(blog.slug)}
+                    disabled={deletingId === blog.slug}
+                    className="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                  >
+                    {deletingId === blog.slug ? "Deleting..." : "Delete"}
+                  </button>
+
+                  <Link
+                    href={`https://aarogyaminds.com/blogs/${blog.slug}`}
+                    target="_blank"
+                    className="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
+                  >
+                    Share
+                  </Link>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4} className="border p-2 text-center">
+                No blogs found.
               </td>
             </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan={4} className="border p-2 text-center">
-              No blogs found.
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+          )}
+        </tbody>
+      </table>
+    </>
   );
 };
