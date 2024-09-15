@@ -1,3 +1,125 @@
+// "use client";
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import { signIn } from "next-auth/react";
+// import Link from "next/link";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import Image from 'next/image'
+
+// export default function LoginForm() {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const router = useRouter();
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     const result = await signIn("Aarogya Minds", {
+//       redirect: false,
+//       email,
+//       password,
+//     });
+
+//     if (result?.ok) {
+//       router.push("/editprofile");
+//     } else {
+//       // Handle error
+//       alert("Login failed, please try again.");
+//     }
+//   };
+
+//   return (
+//     <Card className="mx-auto max-w-sm">
+//       <CardHeader>
+//       <Image src="/apple-touch-icon.png" width={50} height={50} alt="logo" />
+//         <CardTitle className="text-2xl">Login</CardTitle>
+//         <CardDescription>
+//           Enter your email below to login to your account
+//         </CardDescription>
+//       </CardHeader>
+//       <CardContent>
+//         <form onSubmit={handleSubmit}>
+//           <div className="grid gap-4">
+//             <div className="grid gap-2">
+//               <Label htmlFor="email">Email</Label>
+//               <Input
+//                 id="email"
+//                 type="email"
+//                 placeholder="m@example.com"
+//                 required
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+//             </div>
+//             <div className="grid gap-2">
+//               <div className="flex items-center">
+//                 <Label htmlFor="password">Password</Label>
+//                 <Link
+//                   href="#"
+//                   className="ml-auto inline-block text-sm underline"
+//                 >
+//                   Forgot your password?
+//                 </Link>
+//               </div>
+//               <Input
+//                 id="password"
+//                 type="password"
+//                 required
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//               />
+//             </div>
+//             <Button type="submit" className="w-full">
+//               Login
+//             </Button>
+//             <p>--------- or -----------</p>
+//             {/* <Button
+//               onClick={() => {
+//                 signIn("google");
+//               }}
+//               variant="outline"
+//               className="w-full"
+//             >
+//               Login with Google
+//             </Button> */}
+//             <button 
+//               className="rounded-md flex items-center border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+//               type="button"
+//               onClick={() => {
+//                 signIn("google");
+//               }}
+//             >
+//               <Image
+//                 src="https://docs.material-tailwind.com/icons/google.svg"
+//                 className="h-5 w-5 mr-2"
+//                 width={50} height={50} alt="metamask"
+//               />
+//               Continue with Google
+//             </button>
+//           </div>
+//           <div className="mt-4 text-center text-sm">
+//             Don&apos;t have an account?{" "}
+//             <Link href="/signup" className="underline">
+//               Sign up
+//             </Link>
+//           </div>
+//         </form>
+//       </CardContent>
+//     </Card>
+//   );
+// }
+
+
+/////////////////////////////////////////////////////////////
+
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -13,6 +135,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Image from "next/image";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -30,72 +153,95 @@ export default function LoginForm() {
     if (result?.ok) {
       router.push("/editprofile");
     } else {
-      // Handle error
       alert("Login failed, please try again.");
     }
   };
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
+    <div className="flex items-center justify-center h-screen">
+      <Card className="mx-auto max-w-sm py-0 px-6 shadow-xl">
+        <CardHeader className="text-center">
+          <Image
+            src="/apple-touch-icon.png"
+            width={50}
+            height={50}
+            alt="logo"
+            className="mx-auto mb-2"
+          />
+          <CardTitle className="text-2xl font-bold text-gray-800">Login</CardTitle>
+          <CardDescription className="text-gray-600">
+            Enter your details below to access your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="text-gray-700 font-medium">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="border-gray-300 focus:border-gray-500"
+                />
               </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-gray-700 font-medium">
+                    Password
+                  </Label>
+                  <Link href="#" className="text-sm text-blue-600 hover:underline">
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="border-gray-300 focus:border-gray-500"
+                />
+              </div>
+              <Button type="submit" className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white">
+                Login
+              </Button>
+
+              <div className="flex items-center my-2">
+                <div className="w-full h-px bg-gray-300"></div>
+                <span className="px-2 text-sm text-gray-500">or</span>
+                <div className="w-full h-px bg-gray-300"></div>
+              </div>
+
+              <button
+                className="flex items-center justify-center w-full py-2 px-4 border border-gray-300 rounded-md text-gray-600 transition hover:bg-gray-100"
+                type="button"
+                onClick={() => signIn("google")}
+              >
+                <Image
+                  src="https://docs.material-tailwind.com/icons/google.svg"
+                  alt="Google Icon"
+                  width={20}
+                  height={20}
+                  className="mr-2"
+                />
+                Continue with Google
+              </button>
             </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-            <Button
-              onClick={() => {
-                signIn("google");
-              }}
-              variant="outline"
-              className="w-full"
-            >
-              Login with Google
-            </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="underline">
-              Sign up
-            </Link>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+            <div className="mt-4 text-center text-sm text-gray-600">
+              Don&apos;t have an account?{" "}
+              <Link href="/signup" className="text-blue-600 hover:underline">
+                Sign up
+              </Link>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
