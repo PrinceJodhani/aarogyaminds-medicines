@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {Label} from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
@@ -18,19 +19,49 @@ import { CldUploadWidget } from "next-cloudinary";
 import { toast } from "@/components/ui/use-toast"; 
 
 import { useRouter } from "next/navigation";  
-import Link from "next/link";
+
+
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const profileSchema = z.object({
+  fullname: z.string().min(1, "Full Name is required"),
+  PhoneNumber: z.string().min(10, "Phone Number is invalid").max(15, "Phone Number is invalid"),
+  bio: z.string().optional(),
+  insta: z.string().optional(),
+  facebook: z.string().optional(),
+  twitter: z.string().optional(),
+  youtube: z.string().optional(),
+  degreeName: z.string().optional(),
+  degreeFile: z.string().optional(),
+  reg_certy: z.string().optional(),
+  website: z.string().optional(),
+  profileImage: z.string().optional(),
+  
+  clinicName: z.string().optional(),
+  appointmentNumber: z.string().optional(),
+  city: z.string().optional(),
+});
 
 interface FormValues {
   fullname: string;
   bio: string;
+  PhoneNumber:string;
   insta: string;
   facebook: string;
   twitter: string;
+  youtube: string;
   degreeName: string;
   degreeFile: string;
   reg_certy: string;
   website: string;
   profileImage: string;
+  clinicName?: string;
+  appointmentNumber?: string;
+  city?: string;
 }
 
 interface ProfileFormProps {
@@ -45,13 +76,14 @@ function ProfileForm({ username }: ProfileFormProps) {
   console.log("session: ", session);
   //console.log("data: ",data );
 
-  const { control, handleSubmit, setValue, register } = useForm<FormValues>({
+  const { control, handleSubmit, setValue, register, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       fullname: username,
       bio: "",
       insta: "",
       facebook: "",
       twitter: "",
+      youtube:"",
       degreeName: "",
       degreeFile: "",
       reg_certy: "",
@@ -63,6 +95,8 @@ function ProfileForm({ username }: ProfileFormProps) {
   const [isPsychiatrist, setIsPsychiatrist] = useState(false);
   const [isPsychologist, setIsPsychologist] = useState(false);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
+
+  const [dob, setDob] = useState<Date | null>(null);
 
   // Fetch and prefill profile data
   useEffect(() => {
@@ -119,14 +153,29 @@ function ProfileForm({ username }: ProfileFormProps) {
       console.error("User ID not found");
       return;
     }
+    // Conditional Validation for Psychiatrist fields
+    if (isPsychiatrist) {
+      if (!data.clinicName || !data.appointmentNumber || !data.city || !data.degreeFile || !data.reg_certy) {
+        toast({
+          title: "Error",
+          description: "Clinic Name, Appointment Number, City, Degree File, and Registration Certificate are required for Psychiatrists.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
     try {
       const profileData = {
         id: session.user.id,
         name: data.fullname,
         bio: data.bio,
+        PhoneNumber:data.PhoneNumber,
+
         insta_url: data.insta,
         fb_url: data.facebook,
         twitter_url: data.twitter,
+        youtube:data.youtube,
+
         web_url: data.website,
         psychiatrist: isPsychiatrist,
         psychologist: isPsychologist,
@@ -251,7 +300,7 @@ function ProfileForm({ username }: ProfileFormProps) {
                   <FormControl>
                     <Input placeholder="Full Name" {...field} />
                   </FormControl>
-                  <FormMessage />
+                  <FormMessage>{errors.fullname?.message}</FormMessage>
                 </FormItem>
               )}
             />
@@ -271,6 +320,38 @@ function ProfileForm({ username }: ProfileFormProps) {
             )}
           />
 
+<FormField
+              control={control}
+              name="PhoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Phone Number" {...field} />
+                  </FormControl>
+                  <FormMessage>{errors.PhoneNumber?.message}</FormMessage>
+                </FormItem>
+              )}
+            />
+
+<label htmlFor="dob" className="block text-sm font-medium text-gray-700">
+        Date of Birth
+      </label>
+      <DatePicker
+        selected={dob}
+        onChange={(date) => setDob(date)}
+        dateFormat="dd/MM/yyyy"
+        placeholderText="Select your birth date"
+        maxDate={new Date()}
+        minDate={new Date('1980-01-01')}
+        showYearDropdown
+        scrollableYearDropdown
+        yearDropdownItemNumber={100} // Allows scrolling through 100 years
+        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+      />
+
+
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={control}
             name="insta"
@@ -296,6 +377,20 @@ function ProfileForm({ username }: ProfileFormProps) {
               </FormItem>
             )}
           />
+</div>
+<div className="grid grid-cols-2 gap-4">
+<FormField
+            control={control}
+            name="youtube"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Youtube Channel URL" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={control}
@@ -309,7 +404,7 @@ function ProfileForm({ username }: ProfileFormProps) {
               </FormItem>
             )}
           />
-
+</div>
           <div className="flex items-center justify-between space-x-4 rounded-md border p-4 bg-muted">
             <div className="flex-1 space-y-1">
               <p className="text-sm font-medium leading-none">
@@ -369,8 +464,48 @@ function ProfileForm({ username }: ProfileFormProps) {
                   </FormItem>
                 )}
               />
+   
+   
 
 
+
+<div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="ClinicName">Clinic/Institute Name</Label>
+            <Input id="ClinicName" placeholder="Clinic Name" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="AppointmentNumber">Appointment Number</Label>
+            <Input id="AppointmentNumber" placeholder="+91 1234567890" />
+          </div>
+        </div>
+<div className="space-y-2">
+          <Label htmlFor="street">Street Address</Label>
+          <Input id="street" placeholder="123 Main St" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Input id="city" placeholder="Anytown" />
+        </div>
+          <div className="space-y-2">
+            <Label htmlFor="state">State</Label>
+            <Input id="state" placeholder="State" />
+          </div>
+          </div>
+        <div className="grid grid-cols-2 gap-4">
+
+          <div className="space-y-2">
+            <Label htmlFor="postal">Postal Code</Label>
+            <Input id="postal" placeholder="123456" />
+          </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="country">Country</Label>
+          <Input id="country" placeholder="Country" />
+        </div>
+</div>
              <CldUploadWidget uploadPreset="blogthumb" onSuccess={({ event, info }) => {
                 if (event === "success") {
                   setValue("degreeFile", info?.url);
@@ -381,7 +516,7 @@ function ProfileForm({ username }: ProfileFormProps) {
                   <FormItem>
                     <FormLabel>Degree File</FormLabel>
                     <FormControl>
-                      <Button type="button" onClick={() => open()}>
+                      <Button type="button" onClick={()=>open()}>
                         Upload Degree File
                       </Button>
                     </FormControl>
@@ -460,9 +595,11 @@ export function Profile({ username }: { username: string }) {
         defaultValues: {
           fullname: username,
           bio: "",
+          PhoneNumber:"",
           insta: "",
           facebook: "",
           twitter: "",
+          youtube:"",
           degreeName: "",
           degreeFile: "",
           reg_certy: "",

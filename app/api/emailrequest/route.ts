@@ -185,7 +185,7 @@ export async function POST(req: Request) {
 
     const mailOptions = {
       from: '"Aarogya Minds Support" <support@aarogyaminds.com>',
-      to: 'princejodhani7@gmail.com',
+      to: 'ajmera.jash@gmail.com',
       subject: 'New Psychiatrist Approval Request',
       html: htmlContent,
     };
