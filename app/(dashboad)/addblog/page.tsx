@@ -8,49 +8,29 @@ import { addNewBlog, getUser } from './actions';
 import { useSession } from "next-auth/react";
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import Select from 'react-select';
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
+import { toast } from "@/components/ui/use-toast";
 
 interface TagOption {
   value: string;
   label: string;
 }
 
-const tagOptions: TagOption[] = [
+const tagSuggestions: TagOption[] = [
   { value: 'Mental health', label: 'Mental health' },
   { value: 'Child mental health', label: 'Child mental health' },
   { value: 'Latest development', label: 'Latest development' },
-  { value: 'Mental health news', label: 'Mental health news' },
-  { value: 'Adult mental health', label: 'Adult mental health' },
-  { value: 'Geriatric psychiatry', label: 'Geriatric psychiatry' },
-  { value: 'Sexual health', label: 'Sexual health' },
-  { value: 'Emotional health', label: 'Emotional health' },
-  { value: 'Adolescent mental health', label: 'Adolescent mental health' },
-  { value: 'Couple counseling', label: 'Couple counseling' },
-  { value: 'Substance abuse', label: 'Substance abuse' },
-  { value: 'Addiction', label: 'Addiction' },
-  { value: 'Preventive mental health', label: 'Preventive mental health' },
-  { value: 'Psychology', label: 'Psychology' },
-  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
-  { value: 'School mental health', label: 'School mental health' },
-  { value: 'Corporate mental health', label: 'Corporate mental health' },
-  { value: 'Success story', label: 'Success story' },
-  { value: 'IPS news', label: 'IPS news' },
-  { value: 'Patient story', label: 'Patient story' },
-  { value: 'Stories of hope', label: 'Stories of hope' },
-  { value: 'Workplace mental health', label: 'Workplace mental health' },
-  { value: 'Research', label: 'Research' },
-  { value: 'Academics', label: 'Academics' },
-  { value: 'Positivity', label: 'Positivity' },
-  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
+  // Add more suggestions as needed
 ];
 
 export default function AddBlogPage() {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [summary, setSummary] = useState('');
-  const [selectedTags, setSelectedTags] = useState<TagOption[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [suggestions, setSuggestions] = useState<TagOption[]>([]);
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState<string>('');
   const [resetEditor, setResetEditor] = useState(false);
@@ -58,10 +38,9 @@ export default function AddBlogPage() {
   const [loading, setLoading] = useState(true);
   const [wordCount, setWordCount] = useState(0);
   const wordLimit = 30;
+  const maxTags = 4;
 
   const router = useRouter();
-
-
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -69,7 +48,6 @@ export default function AddBlogPage() {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '');
-
     setSlug(name);
   }, [title]);
 
@@ -79,45 +57,89 @@ export default function AddBlogPage() {
         setLoading(false);
         return;
       }
-
       try {
         const userData = await getUser(session.user.email);
-
         if (userData?.verified) {
           setIsVerified(true);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
-
       setLoading(false);
     };
-
     checkVerification();
   }, [session]);
 
-
-  const countWords = (text:any) => {
+  const countWords = (text: string) => {
     return text.trim().split(/\s+/).filter(Boolean).length;
   };
 
- // Handle summary input and word limit enforcement
- const handleSummaryChange = (e:any) => {
-  const text = e.target.value;
-  const words = countWords(text);
+  const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    const words = countWords(text);
+    if (words <= wordLimit) {
+      setSummary(text);
+      setWordCount(words);
+    }
+  };
 
-  if (words <= wordLimit) {
-    setSummary(text);
-    setWordCount(words);
-  }
-};
+  const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value.startsWith('#') && value.length <= 30) {
+      setTagInput(value);
 
+      // Filter suggestions based on input
+      const inputText = value.slice(1).toLowerCase(); // Remove '#' for matching
+      const filteredSuggestions = tagSuggestions.filter((tag) =>
+        tag.value.toLowerCase().includes(inputText)
+      );
+      setSuggestions(filteredSuggestions);
+    } else {
+      setSuggestions([]); // Clear suggestions if input doesn't match
+    }
+  };
+
+  const handleTagAdd = (tag: string) => {
+    const normalizedTag = tag.startsWith('#') ? tag : `#${tag}`;
+    const lowercasedTag = normalizedTag.toLowerCase();
+
+    if (
+      lowercasedTag &&
+      !selectedTags.includes(lowercasedTag) &&
+      selectedTags.length < maxTags
+    ) {
+      setSelectedTags((prevTags) => [...prevTags, lowercasedTag]);
+    }
+    setTagInput('');
+    setSuggestions([]); // Clear suggestions after adding
+  };
+
+  const handleTagDelete = (tagToDelete: string) => {
+    setSelectedTags((prevTags) => prevTags.filter((tag) => tag !== tagToDelete));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (tagInput) {
+        handleTagAdd(tagInput.startsWith('#') ? tagInput : `#${tagInput}`);
+      }
+    }
+  };
+
+  const handleSuggestionClick = (tag: TagOption) => {
+    handleTagAdd(`#${tag.value}`);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!session?.user?.name) {
-      alert("User is not logged in. Please sign in first.");
+      toast({
+        title: "Error",
+        description: "User is not logged in. Please sign in first.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -127,25 +149,31 @@ export default function AddBlogPage() {
     formData.append('title', title);
     formData.append('slug', slug); // Append slug
     formData.append('summary', summary);
-    formData.append('tags', selectedTags.map(tag => tag.value).join(',')); // Attach selected tags as a comma-separated string
+    formData.append('tags', selectedTags.join(',')); // Attach selected tags as a comma-separated string
     formData.append('content', content);
     formData.append('imageUrl', imageUrl);
 
-    await addNewBlog(formData, userData.name, session.user.email);
+    try {
+      await addNewBlog(formData, userData.name, session.user.email);
+      toast({
+        title: "Success",
+        description: "Blog published successfully.",
+        variant: "success",
+      });
 
-    setTitle('');
-    setSummary('');
-    setSelectedTags([]);
-    setContent('');
-    setImageUrl('');
-    setResetEditor(true);
-
-    window.location.reload();
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
+      // Reset form
+      setTitle('');
+      setSummary('');
+      setSelectedTags([]);
+      setContent('');
+      setImageUrl('');
+      setResetEditor(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to publish the blog. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -188,8 +216,8 @@ export default function AddBlogPage() {
           style={{ fontSize: "2rem" }}
         />
 
-          {/* Summary Input with word limit and counter */}
-          <Textarea
+        {/* Summary Input with word limit and counter */}
+        <Textarea
           name="summary"
           value={summary}
           onChange={handleSummaryChange}
@@ -207,7 +235,6 @@ export default function AddBlogPage() {
           onSuccess={({ event, info }) => {
             if (event === "success") {
               setImageUrl(info?.url);
-              console.log(JSON.stringify(info));
             }
           }}
         >
@@ -222,15 +249,44 @@ export default function AddBlogPage() {
         {/* TextEditor for content */}
         <TextEditor onContentChange={setContent} />
 
-        {/* Tags Multi-Select */}
-        <Select
-          isMulti
-          options={tagOptions}
-          value={selectedTags}
-          onChange={setSelectedTags}
-          placeholder="Select tags"
-          className="mb-4"
-        />
+        {/* Custom Tag Input with Hashtag Suggestions */}
+        <div className="mb-4 relative">
+          <Input
+            value={tagInput}
+            onChange={handleTagInputChange}
+            placeholder="Type # to add hashtags (max 4)"
+            className="mb-2"
+            onKeyDown={handleKeyDown}
+          />
+          {/* Suggestions List */}
+          {suggestions.length > 0 && (
+            <ul className="absolute bg-white border border-gray-300 shadow-md rounded-md w-full mt-1 z-10 max-h-40 overflow-y-auto">
+              {suggestions.map((tag) => (
+                <li
+                  key={tag.value}
+                  onClick={() => handleSuggestionClick(tag)}
+                  className="p-2 cursor-pointer hover:bg-gray-100"
+                >
+                  #{tag.label}
+                </li>
+              ))}
+            </ul>
+          )}
+          {/* Selected Tags */}
+          <div className="flex gap-2 flex-wrap mt-2">
+            {selectedTags.map((tag) => (
+              <div key={tag} className="bg-blue-500 text-white p-1 rounded-md flex items-center gap-1">
+                {tag}
+                <button type="button" onClick={() => handleTagDelete(tag)} className="text-white hover:bg-blue-700 px-1 rounded-md">
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+          {selectedTags.length >= maxTags && (
+            <p className="text-red-500 text-sm">Maximum {maxTags} tags allowed.</p>
+          )}
+        </div>
 
         {/* Submit Button */}
         <button type="submit" className="mb-4 bg-black text-white p-2 rounded hover:bg-gray-800 transition-colors duration-300">

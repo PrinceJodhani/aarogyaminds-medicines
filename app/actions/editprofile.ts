@@ -11,11 +11,24 @@ interface EditProfileParams {
   insta_url?: string;
   fb_url?: string;
   twitter_url?: string;
+  youtube?:string;
   web_url?: string;
   psychiatrist?: boolean;
   psychologist?: boolean;
-  degree?: string;
+  degreeName?: string;
   email?: string;
+
+  dob?: string;
+
+  clinicName?: string;
+  appointmentNumber?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  country?: string;
+  PhoneNumber?:string;
+
 }
 
 export async function EditProfile(data: EditProfileParams) {
@@ -38,6 +51,7 @@ export async function EditProfile(data: EditProfileParams) {
       fields.push(`bio = $${index++}`);
       values.push(data.bio);
     }
+ 
     if (data.insta_url) {
       fields.push(`insta_url = $${index++}`);
       values.push(data.insta_url);
@@ -62,9 +76,9 @@ export async function EditProfile(data: EditProfileParams) {
       fields.push(`psychologist = $${index++}`);
       values.push(data.psychologist);
     }
-    if (data.degree) {
+    if (data.degreeName) {
       fields.push(`degree = $${index++}`);
-      values.push(data.degree);
+      values.push(data.degreeName);
     }
     if (data.degreeFile) {
       fields.push(`degree_url = $${index++}`);
@@ -77,6 +91,44 @@ export async function EditProfile(data: EditProfileParams) {
     if (data.registration) {
       fields.push(`reg_certy = $${index++}`);
       values.push(data.registration);
+    }
+   
+    if (data.youtube) {
+      fields.push(`yt_url = $${index++}`);
+      values.push(data.youtube);
+    }
+    if (data.clinicName) {
+      fields.push(`clinic_name = $${index++}`);
+      values.push(data.clinicName);
+    }
+    if (data.dob) {
+      fields.push(`dob = $${index++}`);
+      values.push(data.dob);
+    }
+    if (data.appointmentNumber) {
+      fields.push(`appointment = $${index++}`);
+      values.push(data.appointmentNumber);
+    }
+    if (data.address) {
+      fields.push(`address = $${index++}`);
+      values.push(data.address);
+    }
+    if (data.city) {
+      fields.push(`city = $${index++}`);
+      values.push(data.city);
+    }if (data.state) {
+      fields.push(`state = $${index++}`);
+      values.push(data.state);
+    }if (data.pincode) {
+      fields.push(`pincode = $${index++}`);
+      values.push(data.pincode);
+    }if (data.country) {
+      fields.push(`country = $${index++}`);
+      values.push(data.country);
+    }
+    if (data.PhoneNumber) {
+      fields.push(`phonenumber = $${index++}`);
+      values.push(data.PhoneNumber);
     }
 
     query += ` ${fields.join(", ")} WHERE email = $${index} RETURNING *`;

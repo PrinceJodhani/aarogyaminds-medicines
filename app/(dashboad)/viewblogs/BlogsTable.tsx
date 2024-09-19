@@ -71,12 +71,17 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
           {sortedBlogs.length > 0 ? (
             sortedBlogs.map((blog) => (
               <tr key={blog.slug}>
-                <td className="border p-2">{blog.title}</td>
+                <td className="border p-2">
+                  <a className="hover:text-blue-500" href={blog.slug}>
+                    {blog.title}
+                  </a>
+                </td>
                 <td className="border p-2">
                   {new Date(blog.created_at).toLocaleDateString()}
                 </td>
                 <td className="border p-2">
                   <button
+                    onClick={() => router.push(`/edit/${blog.slug}`)} // Navigate to the edit page with the blog's slug
                     className="text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800"
                   >
                     Edit
