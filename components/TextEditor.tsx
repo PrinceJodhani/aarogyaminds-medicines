@@ -1,30 +1,34 @@
+// TextEditor.tsx
+
 "use client";
-import TextareaAutosize from "react-textarea-autosize";
-import BlockNote from "./BlockNote";
 import { useState, useEffect } from "react";
-import { Input } from "./ui/input";
+import BlockNote from "./BlockNote";
 
 interface TextEditorProps {
-  onContentChange: (content: string) => void; // Accept a prop for content change
+  onContentChange: (content: string) => void;
 }
 
 export default function TextEditor({ onContentChange }: TextEditorProps) {
   const [content, setContent] = useState("");
 
   const handleContentChange = (htmlContent: string) => {
-    setContent(htmlContent); // Save the HTML content in state
-    onContentChange(htmlContent); // Pass the content to the parent component
+    setContent(htmlContent);
+    onContentChange(htmlContent);
   };
 
   useEffect(() => {
-    onContentChange(content); // Update content in the parent when content state changes
+    onContentChange(content);
   }, [content, onContentChange]);
 
   return (
-    <main className="min-h-screen">
-      {/* BlockNote editor */}
-      <BlockNote onChange={handleContentChange} />
+    <div className="w-full overflow-hidden">
+      <div className="w-full">
+        <BlockNote
+          onChange={handleContentChange}
+          className="w-full break-words"
+        />
+      </div>
       <input type="hidden" name="content" value={content} />
-    </main>
+    </div>
   );
 }

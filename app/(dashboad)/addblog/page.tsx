@@ -1,3 +1,5 @@
+// app/(dashboard)/addblog/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -21,7 +23,29 @@ const tagSuggestions: TagOption[] = [
   { value: 'Mental health', label: 'Mental health' },
   { value: 'Child mental health', label: 'Child mental health' },
   { value: 'Latest development', label: 'Latest development' },
-  // Add more suggestions as needed
+  { value: 'Mental health news', label: 'Mental health news' },
+  { value: 'Adult mental health', label: 'Adult mental health' },
+  { value: 'Geriatric psychiatry', label: 'Geriatric psychiatry' },
+  { value: 'Sexual health', label: 'Sexual health' },
+  { value: 'Emotional health', label: 'Emotional health' },
+  { value: 'Adolescent mental health', label: 'Adolescent mental health' },
+  { value: 'Couple counseling', label: 'Couple counseling' },
+  { value: 'Substance abuse', label: 'Substance abuse' },
+  { value: 'Addiction', label: 'Addiction' },
+  { value: 'Preventive mental health', label: 'Preventive mental health' },
+  { value: 'Psychology', label: 'Psychology' },
+  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
+  { value: 'School mental health', label: 'School mental health' },
+  { value: 'Corporate mental health', label: 'Corporate mental health' },
+  { value: 'Success story', label: 'Success story' },
+  { value: 'IPS news', label: 'IPS news' },
+  { value: 'Patient story', label: 'Patient story' },
+  { value: 'Stories of hope', label: 'Stories of hope' },
+  { value: 'Workplace mental health', label: 'Workplace mental health' },
+  { value: 'Research', label: 'Research' },
+  { value: 'Academics', label: 'Academics' },
+  { value: 'Positivity', label: 'Positivity' },
+  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
 ];
 
 export default function AddBlogPage() {
@@ -39,6 +63,7 @@ export default function AddBlogPage() {
   const [wordCount, setWordCount] = useState(0);
   const wordLimit = 30;
   const maxTags = 4;
+  const minTags = 3; // Minimum number of tags required
 
   const router = useRouter();
   const { data: session } = useSession();
@@ -143,6 +168,24 @@ export default function AddBlogPage() {
       return;
     }
 
+    if (selectedTags.length < minTags) {
+      toast({
+        title: "Error",
+        description: `Please add at least ${minTags} hashtags.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!imageUrl) {
+      toast({
+        title: "Error",
+        description: "Please upload an image.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const userData = await getUser(session.user.email);
 
     const formData = new FormData();
@@ -168,6 +211,10 @@ export default function AddBlogPage() {
       setContent('');
       setImageUrl('');
       setResetEditor(true);
+      setWordCount(0);
+
+      router.push(`/preview/${slug}`)
+
     } catch (error) {
       toast({
         title: "Error",
@@ -203,8 +250,9 @@ export default function AddBlogPage() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4" onKeyDown={handleKeyDown}>
+    <div className="w-full pl-0 mx-auto py-8">
+      {/* Removed onKeyDown from the form */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Title Input */}
         <Input
           name="title"
@@ -230,21 +278,32 @@ export default function AddBlogPage() {
         </p>
 
         {/* Image Upload */}
-        <CldUploadWidget
-          uploadPreset="blogthumb"
-          onSuccess={({ event, info }) => {
-            if (event === "success") {
-              setImageUrl(info?.url);
-            }
-          }}
-        >
-          {({ open }) => (
-            <button type="button" onClick={() => open()} className="mb-4 bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300">
-              Upload an Image
-            </button>
-          )}
-        </CldUploadWidget>
-        {imageUrl ? <Image src={imageUrl} width={400} height={400} alt="Blog image" /> : ""}
+<div className="mb-4">
+ 
+  <CldUploadWidget
+    uploadPreset="blogthumb"
+    onSuccess={({ event, info }) => {
+      if (event === "success") {
+        setImageUrl(info?.url);
+      }
+    }}
+  >
+    {({ open }) => (
+      <button
+        type="button"
+        onClick={() => open()}
+        className="bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300"
+      >
+        Upload Image
+      </button>
+    )}
+  </CldUploadWidget>
+  {imageUrl && (
+    <div className="mt-2">
+      <Image src={imageUrl} width={400} height={400} alt="Blog image" />
+    </div>
+  )}
+</div>
 
         {/* TextEditor for content */}
         <TextEditor onContentChange={setContent} />
@@ -256,7 +315,7 @@ export default function AddBlogPage() {
             onChange={handleTagInputChange}
             placeholder="Type # to add hashtags (max 4)"
             className="mb-2"
-            onKeyDown={handleKeyDown}
+            onKeyDown={handleKeyDown} // Keep onKeyDown here
           />
           {/* Suggestions List */}
           {suggestions.length > 0 && (
@@ -285,6 +344,9 @@ export default function AddBlogPage() {
           </div>
           {selectedTags.length >= maxTags && (
             <p className="text-red-500 text-sm">Maximum {maxTags} tags allowed.</p>
+          )}
+          {selectedTags.length < minTags && (
+            <p className="text-red-500 text-sm">Minimum {minTags} tags required.</p>
           )}
         </div>
 

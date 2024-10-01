@@ -1,124 +1,4 @@
-// "use client";
-// import { useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { signIn } from "next-auth/react";
-// import Link from "next/link";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import Image from 'next/image'
-
-// export default function LoginForm() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const router = useRouter();
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     const result = await signIn("Aarogya Minds", {
-//       redirect: false,
-//       email,
-//       password,
-//     });
-
-//     if (result?.ok) {
-//       router.push("/editprofile");
-//     } else {
-//       // Handle error
-//       alert("Login failed, please try again.");
-//     }
-//   };
-
-//   return (
-//     <Card className="mx-auto max-w-sm">
-//       <CardHeader>
-//       <Image src="/apple-touch-icon.png" width={50} height={50} alt="logo" />
-//         <CardTitle className="text-2xl">Login</CardTitle>
-//         <CardDescription>
-//           Enter your email below to login to your account
-//         </CardDescription>
-//       </CardHeader>
-//       <CardContent>
-//         <form onSubmit={handleSubmit}>
-//           <div className="grid gap-4">
-//             <div className="grid gap-2">
-//               <Label htmlFor="email">Email</Label>
-//               <Input
-//                 id="email"
-//                 type="email"
-//                 placeholder="m@example.com"
-//                 required
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//               />
-//             </div>
-//             <div className="grid gap-2">
-//               <div className="flex items-center">
-//                 <Label htmlFor="password">Password</Label>
-//                 <Link
-//                   href="#"
-//                   className="ml-auto inline-block text-sm underline"
-//                 >
-//                   Forgot your password?
-//                 </Link>
-//               </div>
-//               <Input
-//                 id="password"
-//                 type="password"
-//                 required
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//               />
-//             </div>
-//             <Button type="submit" className="w-full">
-//               Login
-//             </Button>
-//             <p>--------- or -----------</p>
-//             {/* <Button
-//               onClick={() => {
-//                 signIn("google");
-//               }}
-//               variant="outline"
-//               className="w-full"
-//             >
-//               Login with Google
-//             </Button> */}
-//             <button 
-//               className="rounded-md flex items-center border border-slate-300 py-2 px-4 text-center text-sm transition-all shadow-sm hover:shadow-lg text-slate-600 hover:text-white hover:bg-slate-800 hover:border-slate-800 focus:text-white focus:bg-slate-800 focus:border-slate-800 active:border-slate-800 active:text-white active:bg-slate-800 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-//               type="button"
-//               onClick={() => {
-//                 signIn("google");
-//               }}
-//             >
-//               <Image
-//                 src="https://docs.material-tailwind.com/icons/google.svg"
-//                 className="h-5 w-5 mr-2"
-//                 width={50} height={50} alt="metamask"
-//               />
-//               Continue with Google
-//             </button>
-//           </div>
-//           <div className="mt-4 text-center text-sm">
-//             Don&apos;t have an account?{" "}
-//             <Link href="/signup" className="underline">
-//               Sign up
-//             </Link>
-//           </div>
-//         </form>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
-
-/////////////////////////////////////////////////////////////
+// app/login/page.tsx
 
 "use client";
 import { useState } from "react";
@@ -136,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { toast } from "../../components/ui/use-toast"; // Import the toast function
+import { authenticateUser } from './actions'; // Import the server action
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -144,16 +26,35 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await signIn("Aarogya Minds", {
-      redirect: false,
-      email,
-      password,
-    });
+    alert(email+ password);
 
-    if (result?.ok) {
-      router.push("/editprofile");
+    // Call the server action to authenticate the user
+    const isAuthenticated = await authenticateUser(email, password);
+    if (isAuthenticated) {
+      // Use NextAuth to sign in the user
+      const result = await signIn("Aarogya Minds", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.ok) {
+        router.push("/editprofile");
+      } else {
+        // Handle error
+        toast({
+          title: "Login Failed",
+          description: "Please try again.",
+          variant: "destructive",
+        });
+      }
     } else {
-      alert("Login failed, please try again.");
+      // Invalid credentials
+      toast({
+        title: "Invalid Credentials",
+        description: "The email or password is incorrect.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -208,7 +109,10 @@ export default function LoginForm() {
                   className="border-gray-300 focus:border-gray-500"
                 />
               </div>
-              <Button type="submit" className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white">
+              <Button
+                type="submit"
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
                 Login
               </Button>
 

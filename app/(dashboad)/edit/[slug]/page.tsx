@@ -137,14 +137,14 @@ export default function EditBlogPage() {
         {imageUrl ? <Image src={imageUrl} width={400} height={400} alt="Blog image" /> : ""}
 
         {/* Textarea for manual HTML input (optional) */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <div>Input (HTML):</div>
           <textarea
             defaultValue={initialHTML}
             onChange={htmlInputChanged}
             className="w-full h-32 p-2 border rounded"
           />
-        </div>
+        </div> */}
 
         {/* BlockNote Editor */}
         <BlockNoteView editor={editor} editable={true} />

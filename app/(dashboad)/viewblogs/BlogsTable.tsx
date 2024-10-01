@@ -1,9 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { deleteBlogById } from "./actions";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Share2,
+  Copy,
+  Facebook,
+  Twitter,
+  SendHorizontal as Whatsapp,
+  ThumbsUp,
+  ThumbsDown,
+  Flag,
+  HeartIcon,
+  MessageCircleIcon,
+  ShareIcon,
+} from "lucide-react";
 
 interface Blog {
   id: number;
@@ -16,6 +30,32 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // State to track which blog's share dropdown is open
+    const [activeShareBlogSlug, setActiveShareBlogSlug] = useState<string | null>(null);
+  const [currentUrl, setCurrentUrl] = useState(""); // Store the current URL
+  const [copied, setCopied] = useState(false);
+
+
+
+
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     setCurrentUrl(`aarogyaminds.com/blogs/${blogs.slug}`);
+  //   }
+  // }, [blogs.slug]); // here I cant get the slug
+
+   // Function to copy link to clipboard
+   const handleCopyLink = () => {
+    if (currentUrl) {
+      navigator.clipboard.writeText(currentUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // Show "Copied" for 2 seconds
+    }
+  };
+
 
   const handleDelete = async (slug: string) => {
     const confirmed = confirm("Are you sure you want to delete this blog?");
@@ -37,6 +77,27 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
       }
     }
   };
+  const socialMediaLinks = [
+    {
+      href: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`,
+      label: 'Facebook',
+      Icon: Facebook,
+      colorClass: 'text-blue-600',
+    },
+    {
+      href: `https://twitter.com/intent/tweet?url=${currentUrl}`,
+      label: 'Twitter',
+      Icon: Twitter,
+      colorClass: 'text-blue-500',
+    },
+    {
+      href: `https://api.whatsapp.com/send?text=${currentUrl}`,
+      label: 'WhatsApp',
+      Icon: Whatsapp,
+      colorClass: 'text-green-500',
+    },
+  ];
+  
 
   // Function to sort blogs by date
   const sortedBlogs = blogs.sort((a, b) => {
@@ -63,7 +124,7 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
         <thead>
           <tr>
             <th className="border p-2">Title</th>
-            <th className="border p-2">Created At</th>
+            <th className="border p-2">Posted On</th>
             <th className="border p-2">Actions</th>
           </tr>
         </thead>
@@ -72,7 +133,7 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
             sortedBlogs.map((blog) => (
               <tr key={blog.slug}>
                 <td className="border p-2">
-                  <a className="hover:text-blue-500" href={blog.slug}>
+                  <a className="hover:text-blue-500" href={`/preview/${blog.slug}`}>
                     {blog.title}
                   </a>
                 </td>
@@ -94,14 +155,71 @@ export const BlogsTable = ({ blogs }: { blogs: Blog[] }) => {
                   >
                     {deletingId === blog.slug ? "Deleting..." : "Delete"}
                   </button>
+                  <div className="relative inline-block">
+  <Button
+    onClick={() => {
+      if (activeShareBlogSlug === blog.slug) {
+        // Close the dropdown if it's already open for this blog
+        setActiveShareBlogSlug(null);
+      } else {
+        setActiveShareBlogSlug(blog.slug);
+        setCurrentUrl(`https://aarogyaminds.com/blogs/${blog.slug}`);
+      }
+    }}
+    className="bg-white text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2"
+  >
+    Share
+  </Button>
 
-                  <Link
-                    href={`https://aarogyaminds.com/blogs/${blog.slug}`}
-                    target="_blank"
-                    className="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
-                  >
-                    Share
-                  </Link>
+  {activeShareBlogSlug === blog.slug && (
+    <div className="absolute left-1/2 transform -translate-x-1/2 sm:left-0 sm:transform-none sm:ml-0 sm:-translate-x-0 z-10 mt-2 w-72 max-w-xs sm:w-64 sm:max-w-sm origin-top-right bg-white shadow-lg rounded-md">
+      <div className="p-4">
+        {/* Social Media Share Links */}
+        <div className="space-y-2">
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${currentUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-blue-600"
+          >
+            <Facebook className="w-5 h-5 mr-2" />
+            Facebook
+          </a>
+          <a
+            href={`https://twitter.com/intent/tweet?url=${currentUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-blue-500"
+          >
+            <Twitter className="w-5 h-5 mr-2" />
+            Twitter
+          </a>
+          <a
+            href={`https://api.whatsapp.com/send?text=${currentUrl}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-green-500"
+          >
+            <Whatsapp className="w-5 h-5 mr-2" />
+            WhatsApp
+          </a>
+        </div>
+
+        {/* Copy Link */}
+        <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center">
+          <span className="text-sm truncate">{currentUrl}</span>
+          <button
+            onClick={handleCopyLink}
+            className="mt-2 sm:mt-0 sm:ml-4 flex items-center gap-1 bg-gray-100 px-3 py-2 rounded-md hover:bg-gray-200"
+          >
+            <Copy className="w-5 h-5" />
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
                 </td>
               </tr>
             ))

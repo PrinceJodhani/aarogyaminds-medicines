@@ -1,3 +1,5 @@
+// blocknote.tsx
+
 "use client";
 import { BlockNoteEditor, PartialBlock } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
@@ -5,15 +7,16 @@ import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/core/style.css";
 import "@blocknote/react/style.css";
 import "@blocknote/mantine/style.css";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, FC } from "react";
 import dynamic from "next/dynamic";
 
 // Disable SSR for this component to prevent hydration errors
-const BlockNote: React.FC<{
+const BlockNote: FC<{
   onChange: (html: string) => void;
   initialContent?: string;
   editable?: boolean;
-}> = ({ onChange, initialContent, editable = true }) => {
+  className?: string;
+}> = ({ onChange, initialContent, editable = true, className }) => {
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [prevHtmlContent, setPrevHtmlContent] = useState<string>("");
 
@@ -59,7 +62,11 @@ const BlockNote: React.FC<{
 
   if (!editor) return null; // Prevent rendering on the server
 
-  return <BlockNoteView editor={editor} editable={editable} theme="light" />;
+  return (
+    <div className={`blocknote-editor ${className || ""}`}>
+      <BlockNoteView editor={editor} editable={editable} theme="light" />
+    </div>
+  );
 };
 
 // Dynamically import BlockNote with SSR disabled

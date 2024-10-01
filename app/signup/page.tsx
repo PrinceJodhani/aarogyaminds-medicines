@@ -172,6 +172,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { checkEmailExists } from "./actions";
+import { toast } from "@/components/ui/use-toast";
 
 export default function SignupForm() {
   const [email, setEmail] = useState("");
@@ -183,6 +185,22 @@ export default function SignupForm() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+
+  // Check if email already exists using server action
+  const emailExists = await checkEmailExists(email);
+
+  if (emailExists) {
+    console.log("email exist")
+    alert("Email is already exist")
+    toast({
+      title: "Error",
+      description: "Email is already exist",
+      variant: "destructive",
+    });
+    return;
+  }
+
     if (!otpSent) {
       const response = await fetch("/api/generate-otp", {
         method: "POST",
