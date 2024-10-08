@@ -113,7 +113,7 @@ const SidePanel = forwardRef<HTMLDivElement, SidePanelProps>(
           <div className="flex h-14 items-center justify-between border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
               <Image
-                width={"30"}
+                width={"30"} height={"30"}
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8GpJBNsAy5i6kFKBjwoumNZSZG_T11SBq3w&s"
                 alt="Logo"
               />
