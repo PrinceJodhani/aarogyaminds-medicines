@@ -1,5 +1,7 @@
+'use server'
 import { Button } from "@/components/ui/button";
 import { getServerSession } from "next-auth";
+// import { useSession } from "next-auth/react";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import {Profile} from "@/components/Profile";
@@ -7,11 +9,12 @@ import Link from "next/link";
 import { FaPlus, FaList, FaCalendarAlt, FaTachometerAlt } from "react-icons/fa";
 
 const Dashboard: React.FC = async () => {
+  // const { data: session } = useSession();
   const session = await getServerSession(authOptions);
-
+console.log(session);
   // Redirect to the built-in NextAuth sign-in page if not authenticated
   if (!session) {
-    redirect('/api/auth/signin');
+    redirect('/login');
   }
 
   return (

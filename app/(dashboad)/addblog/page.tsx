@@ -1,5 +1,3 @@
-// app/(dashboard)/addblog/page.tsx
-
 'use client';
 
 import { useEffect, useState } from 'react';

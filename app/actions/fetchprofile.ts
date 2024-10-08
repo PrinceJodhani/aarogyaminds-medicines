@@ -1,4 +1,3 @@
-// app/actions/fetchprofile.ts
 'use server';
 import { pool } from "@/lib/db";
 
