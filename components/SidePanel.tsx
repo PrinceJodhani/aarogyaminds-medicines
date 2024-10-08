@@ -93,6 +93,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Home, Package, Users, LineChart } from "lucide-react";
 import { forwardRef } from "react";
+import Image from "next/image";
 
 interface SidePanelProps {
   isOpen: boolean;
@@ -111,8 +112,8 @@ const SidePanel = forwardRef<HTMLDivElement, SidePanelProps>(
         <div className="flex h-full flex-col gap-2">
           <div className="flex h-14 items-center justify-between border-b px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <img
-                width={"30px"}
+              <Image
+                width={"30"}
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8GpJBNsAy5i6kFKBjwoumNZSZG_T11SBq3w&s"
                 alt="Logo"
               />

@@ -6,6 +6,7 @@ declare module "next-auth" {
   interface User extends DefaultUser {
     /** The user's email address. */
     email: string;
+    password: string;
     /** Indicates if the user is new. */
     isNewUser?: boolean;
     /** The user's unique ID. */
@@ -16,6 +17,8 @@ declare module "next-auth" {
     user: {
       /** The user's email address. */
       email: string;
+      password: string;
+
       /** The user's name. */
       name?: string | null;
       /** The user's image. */
@@ -33,6 +36,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     /** The user's email address. */
     email: string;
+    password: string;
     /** Indicates if the user is new. */
     isNewUser?: boolean;
     /** The user's unique ID. */
