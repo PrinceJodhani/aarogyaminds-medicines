@@ -16,7 +16,6 @@ import {
 } from "lucide-react"; // Import social media icons
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { deleteBlogById, getBlogs, getBlogsByHashtag } from "./actions";
 import {
@@ -30,7 +29,7 @@ import { useRouter } from 'next/navigation';
 
 import "@blocknote/core/style.css";
 import "@blocknote/mantine/style.css";
-
+import Image  from "next/image";
 
 import DOMPurify from "dompurify";
 
@@ -273,16 +272,15 @@ export default function BlogDetail({ params }: any) {
             </span>
             <div className="flex gap-4">
               <Button className="bg-blue-500 text-white">
-                <img
+                <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"
-                  className="w-7"
-                />{" "}
+                  className="w-7" alt={""}                />{" "}
                 Channel
               </Button>
               <Button className="bg-red-500 text-white">
-                <img
+                <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/d/da/Google_News_icon.svg"
-                  className="w-7"
+                  className="w-7"  alt={""}
                 />{" "}
                 Google News
               </Button>
@@ -463,9 +461,9 @@ export default function BlogDetail({ params }: any) {
                   {blog.insta_url ? (
                     <Button variant="ghost" size="icon">
                       {/* <HeartIcon className="w-4 h-4" /> */}
-                      <img
+                      <Image
                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Instagram_logo_2022.svg/640px-Instagram_logo_2022.svg.png"
-                        className="w-4 h-4"
+                        className="w-4 h-4"  alt={""}
                       />
                       <span className="sr-only">Like</span>
                     </Button>
@@ -476,9 +474,9 @@ export default function BlogDetail({ params }: any) {
                   {blog.fb_url ? (
                     <Button variant="ghost" size="icon">
                       {/* <MessageCircleIcon className="w-4 h-4" /> */}
-                      <img
+                      <Image
                         src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png"
-                        className="w-4 h-4"
+                        className="w-4 h-4"  alt={""}
                       />
 
                       <span className="sr-only">Comment</span>
@@ -489,9 +487,9 @@ export default function BlogDetail({ params }: any) {
                   {blog.twitter_url ? (
                     <Button variant="ghost" size="icon">
                       {/* <ShareIcon className="w-4 h-4" /> */}
-                      <img
+                      <Image
                         src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Logo_Twitter.png"
-                        className="w-7 h-7"
+                        className="w-7 h-7"  alt={""}
                       />
 
                       <span className="sr-only">Share</span>

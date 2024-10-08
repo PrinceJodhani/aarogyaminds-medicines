@@ -12,10 +12,11 @@ import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { toast } from "@/components/ui/use-toast";
 import { BlockNoteView } from "@blocknote/mantine";
+import { any, string } from 'zod';
 
 export default function EditBlogPage() {
   const router = useRouter();
-  const { slug } = useParams();
+  const { slug } = useParams() as { slug: string };
   const { data: session } = useSession();
   const [blog, setBlog] = useState<any>(null);
   const [title, setTitle] = useState('');
@@ -124,7 +125,7 @@ export default function EditBlogPage() {
           uploadPreset="blogthumb"
           onSuccess={({ event, info }) => {
             if (event === "success") {
-              setImageUrl(info?.url);
+              setImageUrl((info as { url: string }).url);
             }
           }}
         >

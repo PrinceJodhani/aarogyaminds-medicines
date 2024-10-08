@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { z } from "zod";
+import { any, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const profileSchema = z.object({
@@ -112,7 +112,7 @@ function ProfileForm({ username }: ProfileFormProps) {
   const [isPsychiatrist, setIsPsychiatrist] = useState(false);
   const [isPsychologist, setIsPsychologist] = useState(false);
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null);
-  const [dob, setDob] = useState<Date | null>(null);
+  const [dob, setDob] = useState<Date | null | undefined>(null);
 
   const [isEditable, setIsEditable] = useState(true);
 
@@ -188,7 +188,7 @@ function ProfileForm({ username }: ProfileFormProps) {
       });
       return;
     }
-
+  
     try {
       const profileData = {
         id: session.user.id,
@@ -207,7 +207,7 @@ function ProfileForm({ username }: ProfileFormProps) {
         profileImage: data.profileImage,
         degreeFile: data.degreeFile,
         registration: data.reg_certy,
-        dob: dob,
+        dob: dob ? dob.toISOString() : data.dob,
         clinicName: data.clinicName,
         appointmentNumber: data.appointmentNumber,
         address: data.address,
@@ -272,8 +272,8 @@ function ProfileForm({ username }: ProfileFormProps) {
           <div className="flex flex-col items-center space-y-4">
             <CldUploadWidget uploadPreset="profile" onSuccess={({ event, info }) => {
               if (event === "success") {
-                setProfileImagePreview(info?.url);
-                setValue("profileImage", info?.url);
+                setProfileImagePreview((info as { url: string }).url);
+                setValue("profileImage", (info as { url: string }).url);
               }
             }}>
               {({ open }) => (
@@ -498,7 +498,7 @@ function ProfileForm({ username }: ProfileFormProps) {
 
               <CldUploadWidget uploadPreset="blogthumb" onSuccess={({ event, info }) => {
                 if (event === "success") {
-                  setValue("degreeFile", info?.url);
+                  setValue("degreeFile", (info as { url: string }).url);
                 }
               }}>
                 {({ open }) => (
@@ -514,7 +514,7 @@ function ProfileForm({ username }: ProfileFormProps) {
 
               <CldUploadWidget uploadPreset="profile" onSuccess={({ event, info }) => {
                 if (event === "success") {
-                  setValue("reg_certy", info?.url);
+                  setValue("reg_certy", (info as { url: string }).url);
                 }
               }}>
                 {({ open }) => (

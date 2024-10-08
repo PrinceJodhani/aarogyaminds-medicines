@@ -19,6 +19,7 @@ interface TagOption {
   label: string;
 }
 
+
 const tagSuggestions: TagOption[] = [
   { value: 'Mental health', label: 'Mental health' },
   { value: 'Child mental health', label: 'Child mental health' },
@@ -284,7 +285,7 @@ export default function AddBlogPage() {
     uploadPreset="blogthumb"
     onSuccess={({ event, info }) => {
       if (event === "success") {
-        setImageUrl(info?.url);
+        setImageUrl((info as { url: string }).url);
       }
     }}
   >

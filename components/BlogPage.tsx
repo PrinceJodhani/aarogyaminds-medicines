@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import BlogForm from "@/components/BlogForm";
+// import BlogForm from "@/components/BlogForm";
 
 export default async function BlogPage() {
   const session = await getServerSession(authOptions);
@@ -12,7 +12,7 @@ export default async function BlogPage() {
 
   return (
     <div>
-      <BlogForm author={session.user.name}/>
+      {/* <BlogForm author={session.user.name}/> */}
     </div>
   );
 }
