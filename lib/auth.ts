@@ -1,5 +1,4 @@
-// app/api/auth/[...nextauth]/route.ts
-
+'use server';
 import NextAuth, { AuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";

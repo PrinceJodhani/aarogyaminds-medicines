@@ -273,12 +273,16 @@ export default function BlogDetail({ params }: any) {
             <div className="flex gap-4">
               <Button className="bg-blue-500 text-white">
                 <Image
+                width={16}
+                height={16}
                   src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"
                   className="w-7" alt={""}                />{" "}
                 Channel
               </Button>
               <Button className="bg-red-500 text-white">
                 <Image
+                width={16}
+                height={16}
                   src="https://upload.wikimedia.org/wikipedia/commons/d/da/Google_News_icon.svg"
                   className="w-7"  alt={""}
                 />{" "}
@@ -375,6 +379,7 @@ export default function BlogDetail({ params }: any) {
                       <Link href={`/blogs/${relatedBlog.slug}`}>
                         {relatedBlog.img_url ? (
                           <Image
+                          
                             src={relatedBlog.img_url}
                             alt={relatedBlog.title}
                             layout="fill"
@@ -475,6 +480,8 @@ export default function BlogDetail({ params }: any) {
                     <Button variant="ghost" size="icon">
                       {/* <MessageCircleIcon className="w-4 h-4" /> */}
                       <Image
+                      width={16}
+                      height={16}
                         src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png"
                         className="w-4 h-4"  alt={""}
                       />
@@ -488,6 +495,8 @@ export default function BlogDetail({ params }: any) {
                     <Button variant="ghost" size="icon">
                       {/* <ShareIcon className="w-4 h-4" /> */}
                       <Image
+                      width={16}
+                      height={16}
                         src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Logo_Twitter.png"
                         className="w-7 h-7"  alt={""}
                       />
