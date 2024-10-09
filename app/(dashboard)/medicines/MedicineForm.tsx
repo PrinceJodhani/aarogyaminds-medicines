@@ -643,7 +643,7 @@ export default function MedicineForm() {
         </div>
 
 
-        <h2 className="text-2xl font-semibold mt-8">Courtesy</h2>
+        {/* <h2 className="text-2xl font-semibold mt-8">Courtesy</h2>
         <div>
           <Label htmlFor="courtesy" className="text-lg font-medium">
           Reference Link
@@ -654,7 +654,7 @@ export default function MedicineForm() {
             rows={2}
             className="mt-1 block w-full"
           />
-        </div>
+        </div> */}
 
 
       {/* Repeat the above pattern for all other fields */}

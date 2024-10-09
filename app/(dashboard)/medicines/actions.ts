@@ -59,7 +59,6 @@ export async function addMedicine(formData: FormData) {
   const pearls = getField('pearls');
 
   const depot_formulation = getField('depot_formulation');
-  const courtesy = getField('courtesy');
 
 
   
@@ -107,8 +106,7 @@ export async function addMedicine(formData: FormData) {
       potential_disadvantages,
       primary_target_symptoms,
       pearls,
-      depot_formulation,
-      courtesy
+      depot_formulation
     ) VALUES (
       $1, $2, $3, $4, $5,
       $6, $7, $8, $9, $10,
@@ -118,7 +116,7 @@ export async function addMedicine(formData: FormData) {
       $26, $27, $28, $29, $30,
       $31, $32, $33, $34, $35,
       $36, $37, $38, $39, $40,
-      $41, $42, $43
+      $41, $42
     )
   `;
 
@@ -165,7 +163,6 @@ export async function addMedicine(formData: FormData) {
     primary_target_symptoms,
     pearls,
     depot_formulation,
-    courtesy,
   ];
 
   try {
