@@ -76,7 +76,7 @@ export default function MedicineForm() {
 
 
     {/* Generic */}
-    <div>
+    {/* <div>
           <Label htmlFor="generic" className="text-lg font-medium">
             Generic?
           </Label>
@@ -86,7 +86,7 @@ export default function MedicineForm() {
             rows={2}
             className="mt-1 block w-full"
           />
-        </div>
+        </div> */}
 
         {/* Class */}
         <div>
@@ -613,6 +613,49 @@ export default function MedicineForm() {
             className="mt-1 block w-full"
           />
         </div>
+
+
+        <h2 className="text-2xl font-semibold mt-8">The Art Of Switching</h2>
+
+
+        <div>
+          <Label htmlFor="the_art_of_switching" className="text-lg font-medium">
+          The art of switching
+          </Label>
+          <Textarea
+            name="the_art_of_switching"
+            id="the_art_of_switching"
+            rows={2}
+            className="mt-1 block w-full"
+          />
+        </div>
+
+        <div>
+          <Label htmlFor="depot_formulation" className="text-lg font-medium">
+          Depot Formulation
+          </Label>
+          <Textarea
+            name="depot_formulation"
+            id="depot_formulation"
+            rows={2}
+            className="mt-1 block w-full"
+          />
+        </div>
+
+
+        <h2 className="text-2xl font-semibold mt-8">Courtesy</h2>
+        <div>
+          <Label htmlFor="courtesy" className="text-lg font-medium">
+          Reference Link
+          </Label>
+          <Textarea
+            name="courtesy"
+            id="courtesy"
+            rows={2}
+            className="mt-1 block w-full"
+          />
+        </div>
+
 
       {/* Repeat the above pattern for all other fields */}
 

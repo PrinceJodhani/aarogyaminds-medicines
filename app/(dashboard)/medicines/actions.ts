@@ -10,7 +10,7 @@ export async function addMedicine(formData: FormData) {
 
   const medicine_name = getField('medicine_name');
   const brands = getField('brands');
-  const generic = getField('generic');
+  const the_art_of_switching = getField('the_art_of_switching');
   const med_class = getField('class'); // 'class' is a reserved word, so we handle it appropriately
   const commonly_prescribed_for = getField('commonly_prescribed_for');
   const how_the_drug_works = getField('how_the_drug_works');
@@ -58,11 +58,17 @@ export async function addMedicine(formData: FormData) {
   const primary_target_symptoms = getField('primary_target_symptoms');
   const pearls = getField('pearls');
 
+  const depot_formulation = getField('depot_formulation');
+  const courtesy = getField('courtesy');
+
+
+  
+
   const sql = `
     INSERT INTO medicines (
       medicine_name,
       brands,
-      generic,
+      the_art_of_switching,
       med_class,
       commonly_prescribed_for,
       how_the_drug_works,
@@ -100,7 +106,9 @@ export async function addMedicine(formData: FormData) {
       potential_advantages,
       potential_disadvantages,
       primary_target_symptoms,
-      pearls
+      pearls,
+      depot_formulation,
+      courtesy
     ) VALUES (
       $1, $2, $3, $4, $5,
       $6, $7, $8, $9, $10,
@@ -110,14 +118,14 @@ export async function addMedicine(formData: FormData) {
       $26, $27, $28, $29, $30,
       $31, $32, $33, $34, $35,
       $36, $37, $38, $39, $40,
-      $41
+      $41, $42, $43
     )
   `;
 
   const values = [
     medicine_name,
     brands,
-    generic,
+    the_art_of_switching,
     med_class,
     commonly_prescribed_for,
     how_the_drug_works,
@@ -156,6 +164,8 @@ export async function addMedicine(formData: FormData) {
     potential_disadvantages,
     primary_target_symptoms,
     pearls,
+    depot_formulation,
+    courtesy,
   ];
 
   try {
