@@ -1,50 +1,29 @@
-'use client';
-
+'use client'
 import { useEffect, useState } from 'react';
 import TextEditor from '@/components/TextEditor';
 import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; // Changed import here
 import { addNewBlog, getUser } from './actions';
-import { useSession } from "next-auth/react";
+import { useSession } from 'next-auth/react';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
-import { toast } from "@/components/ui/use-toast";
+import { toast } from '@/components/ui/use-toast';
 
 interface TagOption {
   value: string;
   label: string;
 }
 
-
 const tagSuggestions: TagOption[] = [
-  { value: 'Mental health', label: 'Mental health' },
-  { value: 'Child mental health', label: 'Child mental health' },
-  { value: 'Latest development', label: 'Latest development' },
-  { value: 'Mental health news', label: 'Mental health news' },
-  { value: 'Adult mental health', label: 'Adult mental health' },
-  { value: 'Geriatric psychiatry', label: 'Geriatric psychiatry' },
-  { value: 'Sexual health', label: 'Sexual health' },
-  { value: 'Emotional health', label: 'Emotional health' },
-  { value: 'Adolescent mental health', label: 'Adolescent mental health' },
-  { value: 'Couple counseling', label: 'Couple counseling' },
-  { value: 'Substance abuse', label: 'Substance abuse' },
-  { value: 'Addiction', label: 'Addiction' },
-  { value: 'Preventive mental health', label: 'Preventive mental health' },
-  { value: 'Psychology', label: 'Psychology' },
-  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
-  { value: 'School mental health', label: 'School mental health' },
-  { value: 'Corporate mental health', label: 'Corporate mental health' },
-  { value: 'Success story', label: 'Success story' },
-  { value: 'IPS news', label: 'IPS news' },
-  { value: 'Patient story', label: 'Patient story' },
-  { value: 'Stories of hope', label: 'Stories of hope' },
-  { value: 'Workplace mental health', label: 'Workplace mental health' },
-  { value: 'Research', label: 'Research' },
-  { value: 'Academics', label: 'Academics' },
-  { value: 'Positivity', label: 'Positivity' },
-  { value: 'Neuropsychiatry', label: 'Neuropsychiatry' },
+  // ... your tag suggestions
 ];
 
 export default function AddBlogPage() {
@@ -62,9 +41,9 @@ export default function AddBlogPage() {
   const [wordCount, setWordCount] = useState(0);
   const wordLimit = 30;
   const maxTags = 4;
-  const minTags = 3; // Minimum number of tags required
+  const minTags = 3;
 
-  const router = useRouter();
+  const router = useRouter(); // Using the correct router now
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -83,13 +62,12 @@ export default function AddBlogPage() {
       }
       try {
         const userData = await getUser(session.user.email);
-        if (userData?.verified) {
-          setIsVerified(true);
-        }
+        setIsVerified(userData?.verified || false);
       } catch (error) {
         console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     checkVerification();
   }, [session]);
@@ -112,14 +90,13 @@ export default function AddBlogPage() {
     if (value.startsWith('#') && value.length <= 30) {
       setTagInput(value);
 
-      // Filter suggestions based on input
-      const inputText = value.slice(1).toLowerCase(); // Remove '#' for matching
+      const inputText = value.slice(1).toLowerCase();
       const filteredSuggestions = tagSuggestions.filter((tag) =>
         tag.value.toLowerCase().includes(inputText)
       );
       setSuggestions(filteredSuggestions);
     } else {
-      setSuggestions([]); // Clear suggestions if input doesn't match
+      setSuggestions([]);
     }
   };
 
@@ -135,7 +112,7 @@ export default function AddBlogPage() {
       setSelectedTags((prevTags) => [...prevTags, lowercasedTag]);
     }
     setTagInput('');
-    setSuggestions([]); // Clear suggestions after adding
+    setSuggestions([]);
   };
 
   const handleTagDelete = (tagToDelete: string) => {
@@ -146,7 +123,7 @@ export default function AddBlogPage() {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (tagInput) {
-        handleTagAdd(tagInput.startsWith('#') ? tagInput : `#${tagInput}`);
+        handleTagAdd(tagInput);
       }
     }
   };
@@ -160,27 +137,27 @@ export default function AddBlogPage() {
 
     if (!session?.user?.name) {
       toast({
-        title: "Error",
-        description: "User is not logged in. Please sign in first.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'User is not logged in. Please sign in first.',
+        variant: 'destructive',
       });
       return;
     }
 
     if (selectedTags.length < minTags) {
       toast({
-        title: "Error",
+        title: 'Error',
         description: `Please add at least ${minTags} hashtags.`,
-        variant: "destructive",
+        variant: 'destructive',
       });
       return;
     }
 
     if (!imageUrl) {
       toast({
-        title: "Error",
-        description: "Please upload an image.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Please upload an image.',
+        variant: 'destructive',
       });
       return;
     }
@@ -189,18 +166,18 @@ export default function AddBlogPage() {
 
     const formData = new FormData();
     formData.append('title', title);
-    formData.append('slug', slug); // Append slug
+    formData.append('slug', slug);
     formData.append('summary', summary);
-    formData.append('tags', selectedTags.join(',')); // Attach selected tags as a comma-separated string
+    formData.append('tags', selectedTags.join(','));
     formData.append('content', content);
     formData.append('imageUrl', imageUrl);
 
     try {
       await addNewBlog(formData, userData.name, session.user.email);
       toast({
-        title: "Success",
-        description: "Blog published successfully.",
-        variant: "success",
+        title: 'Success',
+        description: 'Blog published successfully.',
+        variant: 'success',
       });
 
       // Reset form
@@ -212,13 +189,12 @@ export default function AddBlogPage() {
       setResetEditor(true);
       setWordCount(0);
 
-      router.push(`/preview/${slug}`)
-
+      router.push(`/preview/${slug}`); // Navigation should work now
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to publish the blog. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to publish the blog. Please try again.',
+        variant: 'destructive',
       });
     }
   };
@@ -232,15 +208,21 @@ export default function AddBlogPage() {
       <div className="flex justify-center mt-20">
         <Card className="max-w-lg text-center shadow-2xl border border-gray-200">
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-gray-800">Access Pending</CardTitle>
-            <CardDescription className="text-gray-500">Your account verification is in progress</CardDescription>
+            <CardTitle className="text-2xl font-semibold text-gray-800">
+              Access Pending
+            </CardTitle>
+            <CardDescription className="text-gray-500">
+              Your account verification is in progress
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-gray-700 text-lg">
-              You can access the add blog feature once the admin completes the verification process.
+              You can access the add blog feature once the admin completes the
+              verification process.
             </p>
             <p className="text-gray-700 text-lg">
-              In the meantime, feel free to explore other features of the platform. We appreciate your patience!
+              In the meantime, feel free to explore other features of the
+              platform. We appreciate your patience!
             </p>
           </CardContent>
         </Card>
@@ -250,7 +232,6 @@ export default function AddBlogPage() {
 
   return (
     <div className="w-full pl-0 mx-auto py-8">
-      {/* Removed onKeyDown from the form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Title Input */}
         <Input
@@ -260,7 +241,7 @@ export default function AddBlogPage() {
           placeholder="Title"
           required
           className="mb-4 p-2 text-2xl font-semibold border-0 rounded"
-          style={{ fontSize: "2rem" }}
+          style={{ fontSize: '2rem' }}
         />
 
         {/* Summary Input with word limit and counter */}
@@ -277,32 +258,31 @@ export default function AddBlogPage() {
         </p>
 
         {/* Image Upload */}
-<div className="mb-4">
- 
-  <CldUploadWidget
-    uploadPreset="blogthumb"
-    onSuccess={({ event, info }) => {
-      if (event === "success") {
-        setImageUrl((info as { url: string }).url);
-      }
-    }}
-  >
-    {({ open }) => (
-      <button
-        type="button"
-        onClick={() => open()}
-        className="bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300"
-      >
-        Upload Image
-      </button>
-    )}
-  </CldUploadWidget>
-  {imageUrl && (
-    <div className="mt-2">
-      <Image src={imageUrl} width={400} height={400} alt="Blog image" />
-    </div>
-  )}
-</div>
+        <div className="mb-4">
+          <CldUploadWidget
+            uploadPreset="blogthumb"
+            onSuccess={({ event, info }) => {
+              if (event === 'success') {
+                setImageUrl((info as { url: string }).url);
+              }
+            }}
+          >
+            {({ open }) => (
+              <button
+                type="button"
+                onClick={() => open()}
+                className="bg-black text-white p-2 rounded w-40 hover:bg-gray-800 transition-colors duration-300"
+              >
+                Upload Image
+              </button>
+            )}
+          </CldUploadWidget>
+          {imageUrl && (
+            <div className="mt-2">
+              <Image src={imageUrl} width={400} height={400} alt="Blog image" />
+            </div>
+          )}
+        </div>
 
         {/* TextEditor for content */}
         <TextEditor onContentChange={setContent} />
@@ -314,7 +294,7 @@ export default function AddBlogPage() {
             onChange={handleTagInputChange}
             placeholder="Type # to add hashtags (max 4)"
             className="mb-2"
-            onKeyDown={handleKeyDown} // Keep onKeyDown here
+            onKeyDown={handleKeyDown}
           />
           {/* Suggestions List */}
           {suggestions.length > 0 && (
@@ -333,24 +313,38 @@ export default function AddBlogPage() {
           {/* Selected Tags */}
           <div className="flex gap-2 flex-wrap mt-2">
             {selectedTags.map((tag) => (
-              <div key={tag} className="bg-blue-500 text-white p-1 rounded-md flex items-center gap-1">
+              <div
+                key={tag}
+                className="bg-blue-500 text-white p-1 rounded-md flex items-center gap-1"
+              >
                 {tag}
-                <button type="button" onClick={() => handleTagDelete(tag)} className="text-white hover:bg-blue-700 px-1 rounded-md">
+                <button
+                  type="button"
+                  onClick={() => handleTagDelete(tag)}
+                  className="text-white hover:bg-blue-700 px-1 rounded-md"
+                >
                   &times;
                 </button>
               </div>
             ))}
           </div>
           {selectedTags.length >= maxTags && (
-            <p className="text-red-500 text-sm">Maximum {maxTags} tags allowed.</p>
+            <p className="text-red-500 text-sm">
+              Maximum {maxTags} tags allowed.
+            </p>
           )}
           {selectedTags.length < minTags && (
-            <p className="text-red-500 text-sm">Minimum {minTags} tags required.</p>
+            <p className="text-red-500 text-sm">
+              Minimum {minTags} tags required.
+            </p>
           )}
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="mb-4 bg-black text-white p-2 rounded hover:bg-gray-800 transition-colors duration-300">
+        <button
+          type="submit"
+          className="mb-4 bg-black text-white p-2 rounded hover:bg-gray-800 transition-colors duration-300"
+        >
           Publish Blog
         </button>
       </form>

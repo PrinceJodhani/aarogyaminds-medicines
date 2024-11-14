@@ -171,8 +171,8 @@ export async function POST(req: Request) {
           </table>
         </div>
         <div class="buttons">
-          <a href="https://aarogyaminds.com/api/verify?email=${data.email}&verified=true" class="approve">Approve</a>
-          <a href="https://aarogyaminds.com/api/verify?email=${data.email}&verified=false" class="decline">Decline</a>
+          <a href="https://member.aarogyaminds.com/api/verify?email=${data.email}&verified=true" class="approve">Approve</a>
+          <a href="https://member.aarogyaminds.com/api/verify?email=${data.email}&verified=false" class="decline">Decline</a>
         </div>
     
         <div class="footer">
@@ -186,7 +186,7 @@ export async function POST(req: Request) {
 
     const mailOptions = {
       from: '"Aarogya Minds Support" <support@aarogyaminds.com>',
-      to: 'princejodhani7@gmail.com',
+      to: ['princejodhani7@gmail.com','ajmera.jash@gmail.com'],
       subject: 'New Psychiatrist Approval Request',
       html: htmlContent,
     };

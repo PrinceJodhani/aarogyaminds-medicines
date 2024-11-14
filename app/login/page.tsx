@@ -14,8 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { toast } from "../../components/ui/use-toast"; // Import the toast function
-import { authenticateUser } from './actions'; // Import the server action
+import { toast } from "../../components/ui/use-toast";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -24,33 +23,21 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(email+ password);
 
-    // Call the server action to authenticate the user
-    const isAuthenticated = await authenticateUser(email, password);
-    if (isAuthenticated) {
-      // Use NextAuth to sign in the user
-      const result = await signIn("Aarogya Minds", {
-        redirect: false,
-        email,
-        password,
-      });
+    // Use NextAuth to sign in the user
+    const result = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
 
-      if (result?.ok) {
-        router.push("/editprofile");
-      } else {
-        // Handle error
-        toast({
-          title: "Login Failed",
-          description: "Please try again.",
-          variant: "destructive",
-        });
-      }
+    if (result?.ok) {
+      router.push("/editprofile");
     } else {
-      // Invalid credentials
+      // Handle error
       toast({
-        title: "Invalid Credentials",
-        description: "The email or password is incorrect.",
+        title: "Login Failed",
+        description: "Please check your credentials and try again.",
         variant: "destructive",
       });
     }
